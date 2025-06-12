@@ -30,28 +30,38 @@
             "Nature and Outdoors"
             "Urban and Architecture"]})
 
-(defn- validate-input
-  "Validates input format based on the model being used."
-  [model input]
+(defn- validate-jina-embeddings-v3-input
+  "Validates input format for jina-embeddings-v3 model."
+  [input]
+  (let [has-image? (some #(contains? % :image) input)]
+    (when has-image?
+      (throw (ex-info "jina-embeddings-v3 model does not support image inputs"
+                      {:input input :model "jina-embeddings-v3"})))))
+
+(defn- validate-jina-clip-v2-input
+  "Validates input format for jina-clip-v2 model."
+  [input]
   (let [has-text?  (some #(contains? % :text) input)
         has-image? (some #(contains? % :image) input)]
     (cond
       (and has-text? has-image?)
       (throw (ex-info "Cannot mix text and image objects in the same request"
-                      {:input input :model model}))
+                      {:input input :model "jina-clip-v2"}))
 
-      (and (= model "jina-clip-v2") (not has-image?))
+      (not has-image?)
       (throw (ex-info "jina-clip-v2 model requires image inputs"
-                      {:input input :model model}))
+                      {:input input :model "jina-clip-v2"})))))
 
-      (and (= model "jina-embeddings-v3") has-image?)
-      (throw (ex-info "jina-embeddings-v3 model does not support image inputs"
-                      {:input input :model model}))
+(defn- validate-input
+  "Validates input format based on the model being used."
+  [model input]
+  (case model
+    "jina-embeddings-v3" (validate-jina-embeddings-v3-input input)
+    "jina-clip-v2" (validate-jina-clip-v2-input input)
+    true))
 
-      :else true)))
-
-(validate-input "jina-embeddings-v3" example-jina-embeddings-v3)
-(validate-input "jina-clip-v2" example-jina-clip-v2)
+(validate-input "jina-embeddings-v3" (:input example-jina-embeddings-v3))
+(validate-input "jina-clip-v2" (:input example-jina-clip-v2))
 
 (defn call
   "Zero-shot classification for text or images using Jina AI Classifier API.
