@@ -39,7 +39,7 @@
 
 (def jina-clip-v2-input-schema
   "Schema for jina-clip-v2 input: vector of objects with either text or image keys"
-  [:vector [:or 
+  [:vector [:or
             [:map [:text :string]]
             [:map [:image :string]]]])
 
@@ -54,19 +54,24 @@
                        (me/humanize))]
         (throw (ex-info "jina-embeddings-v3 model requires input to be an array of strings only"
                         {:input input :model model :errors errors}))))
-    
+
     "jina-clip-v2"
     (when-not (m/validate jina-clip-v2-input-schema input)
       (let [errors (-> jina-clip-v2-input-schema
                        (m/explain input)
                        (me/humanize))]
         (throw (ex-info "jina-clip-v2 model requires input to be a vector of objects with either 'text' or 'image' keys"
-                       {:input input :model model :errors errors}))))
-    
+                        {:input input :model model :errors errors}))))
+
     true))
 
+;; Valid examples
 #_(validate-input (:model example-jina-embeddings-v3) (:input example-jina-embeddings-v3))
 #_(validate-input (:model example-jina-clip-v2) (:input example-jina-clip-v2))
+
+;; InValid examples
+#_(validate-input (:model example-jina-embeddings-v3) (:input example-jina-clip-v2))
+#_(validate-input (:model example-jina-clip-v2) (:input example-jina-embeddings-v3))
 
 (defn call
   "Zero-shot classification for text or images using Jina AI Classifier API.
