@@ -40,19 +40,16 @@
          (throw e))))))
 
 (defn jina-reader-request
-  "Special request function for Jina Reader and Search APIs which use GET and different URL patterns"
-  [url-or-query opts]
+  "Request function for Jina Reader API which uses GET with URL pattern https://r.jina.ai/"
+  [url opts]
   (let [api-key    (get-api-key)
-        ;; Determine if this is a search query or URL based on content
-        is-search? (not (re-matches #"^https?://.*" url-or-query))
-        base-url   (if is-search? "https://s.jina.ai/" "https://r.jina.ai/")
-        full-url   (str base-url url-or-query)
+        reader-url (str "https://r.jina.ai/" url)
         start-time (System/nanoTime)
         headers    (merge {"Authorization" (str "Bearer " api-key)
                            "Accept" "application/json"}
                           opts)]
     (try
-      (let [response    (http/get full-url
+      (let [response    (http/get reader-url
                                   {:headers          headers
                                    :throw-exceptions false})
             end-time    (System/nanoTime)
@@ -63,5 +60,29 @@
           (throw (ex-info (str "HTTP " (:status response) ": " (:body response))
                           {:status (:status response) :body (:body response)}))))
       (catch Exception e
-        (println "Error making Jina Reader/Search API request:" (.getMessage e))
+        (println "Error making Jina Reader API request:" (.getMessage e))
+        (throw e)))))
+
+(defn jina-search-request
+  "Request function for Jina Search API which uses GET with URL pattern https://s.jina.ai/"
+  [query opts]
+  (let [api-key    (get-api-key)
+        search-url (str "https://s.jina.ai/" query)
+        start-time (System/nanoTime)
+        headers    (merge {"Authorization" (str "Bearer " api-key)
+                           "Accept" "application/json"}
+                          opts)]
+    (try
+      (let [response    (http/get search-url
+                                  {:headers          headers
+                                   :throw-exceptions false})
+            end-time    (System/nanoTime)
+            duration-ms (/ (- end-time start-time) 1000000.0)]
+        (if (< (:status response) 400)
+          (let [parsed-response (json/decode (:body response) keyword)]
+            (assoc parsed-response :execution_time_ms duration-ms))
+          (throw (ex-info (str "HTTP " (:status response) ": " (:body response))
+                          {:status (:status response) :body (:body response)}))))
+      (catch Exception e
+        (println "Error making Jina Search API request:" (.getMessage e))
         (throw e)))))

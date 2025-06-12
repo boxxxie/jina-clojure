@@ -1,5 +1,5 @@
 (ns jina.api.search-web
-  (:require [jina.util :refer [jina-reader-request]]))
+  (:require [jina.util :refer [jina-search-request]]))
 
 (defn call
   "Search the web for information using Jina AI Search API.
@@ -29,7 +29,7 @@
     - `:X-Locale` (string): Controls the browser locale to render the page."
   [q & opts]
   (let [headers (first opts)]
-    (jina-reader-request q headers)))
+    (jina-search-request q headers)))
 
 
 #_(call "latest AI research papers")
