@@ -3,50 +3,18 @@
         lambdaisland/kaocha {:mvn/version "1.87.1366"}}
  :paths ["src" "test"]
  :tasks
- {:requires [[clojure.test :as t]
-             [clojure.java.shell :refer [sh]]]
+ {:requires [[clojure.java.shell :refer [sh]]]
   
   test
-  {:doc "Run tests"
-   :task (do
-           (println "Running tests...")
-           (require 'jina.core-test)
-           (let [result (t/run-tests 'jina.core-test)]
-             (println (format "Ran %d tests. %d failures, %d errors."
-                             (+ (:pass result) (:fail result) (:error result))
-                             (:fail result)
-                             (:error result)))
-             (when (pos? (+ (:fail result) (:error result)))
-               (System/exit 1))))}
+  {:doc "Run all tests"
+   :task (clojure "-M" "-e" "(require 'clojure.test) (require 'jina.core-test) (clojure.test/run-tests 'jina.core-test)")}
 
   test-single
   {:doc "Run a single test by name (usage: bb test-single test-get-api-key)"
    :task (let [test-name (first *command-line-args*)]
            (if test-name
-             (do
-               (println (str "Running single test: " test-name))
-               (require 'jina.core-test)
-               (let [test-var (ns-resolve 'jina.core-test (symbol test-name))]
-                 (if test-var
-                   (let [result (t/test-var test-var)]
-                     (println (format "Ran 1 test. %d failures, %d errors."
-                                     (:fail result 0)
-                                     (:error result 0)))
-                     (when (pos? (+ (:fail result 0) (:error result 0)))
-                       (System/exit 1)))
-                   (do
-                     (println (str "Test not found: " test-name))
-                     (System/exit 1)))))
-             (do
-               (println "Usage: bb test-single <test-name>")
-               (println "Available tests:")
-               (require 'jina.core-test)
-               (doseq [test-name (->> (ns-publics 'jina.core-test)
-                                     (filter #(re-find #"^test-" (str (key %))))
-                                     (map key)
-                                     sort)]
-                 (println (str "  " test-name)))
-               (System/exit 1))))}
+             (clojure "-M" "-e" (format "(require 'clojure.test) (require 'jina.core-test) (clojure.test/test-var #'jina.core-test/%s)" test-name))
+             (println "Usage: bb test-single <test-name>\nExample: bb test-single test-get-api-key")))}
   
   kaocha
   {:doc "Run tests with Kaocha"
