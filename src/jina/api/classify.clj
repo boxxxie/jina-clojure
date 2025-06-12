@@ -57,11 +57,11 @@
   [model input]
   (case model
     "jina-embeddings-v3" (validate-jina-embeddings-v3-input input)
-    "jina-clip-v2" (validate-jina-clip-v2-input input)
+    "jina-clip-v2"       (validate-jina-clip-v2-input input)
     true))
 
-(validate-input "jina-embeddings-v3" (:input example-jina-embeddings-v3))
-(validate-input "jina-clip-v2" (:input example-jina-clip-v2))
+#_(validate-input (:model example-jina-embeddings-v3) (:input example-jina-embeddings-v3))
+#_(validate-input (:model example-jina-clip-v2) (:input example-jina-clip-v2))
 
 (defn call
   "Zero-shot classification for text or images using Jina AI Classifier API.
@@ -86,7 +86,7 @@
     - `:model` (string, default: \"jina-embeddings-v3\", enum: \"jina-clip-v2\", \"jina-embeddings-v3\"):
       Identifier of the model to use. jina-embeddings-v3 for text, jina-clip-v2 for images.
     - `:classifier_id` (string): The identifier of the classifier. If not provided, a new classifier will be created."
-  [input labels & opts]
+  [{:keys [input labels]} & opts]
   (let [default-opts {:model "jina-embeddings-v3"}
         merged-opts  (merge default-opts (first opts))
         model        (:model merged-opts)]
