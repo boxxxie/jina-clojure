@@ -102,3 +102,26 @@
         (is (contains? response :tokens))
         (is (sequential? (:tokens response)))
         (is (pos? (count (:tokens response))))))))
+
+;; Basic function existence tests (these run without API key)
+(deftest test-api-functions-exist
+  (testing "All API functions are defined"
+    (is (fn? jina/jina-embeddings))
+    (is (fn? jina/jina-rerank))
+    (is (fn? jina/jina-classify))
+    (is (fn? jina/jina-deep-search))
+    (is (fn? jina/jina-read-url))
+    (is (fn? jina/jina-search-web))
+    (is (fn? jina/jina-segment-text))))
+
+;; Test input validation (these run without API key)
+(deftest test-input-validation
+  (testing "Functions handle invalid inputs gracefully"
+    (when-not (System/getenv "JINA_API_KEY")
+      (is (thrown? Exception (jina/jina-embeddings nil)))
+      (is (thrown? Exception (jina/jina-rerank nil nil)))
+      (is (thrown? Exception (jina/jina-classify nil nil)))
+      (is (thrown? Exception (jina/jina-deep-search nil)))
+      (is (thrown? Exception (jina/jina-read-url nil)))
+      (is (thrown? Exception (jina/jina-search-web nil)))
+      (is (thrown? Exception (jina/jina-segment-text nil))))))

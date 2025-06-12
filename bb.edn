@@ -11,7 +11,12 @@
   {:doc "Run tests"
    :task (do
            (println "Running tests...")
+           (require 'jina.core-test)
            (let [result (t/run-tests 'jina.core-test)]
+             (println (format "Ran %d tests. %d failures, %d errors."
+                             (+ (:pass result) (:fail result) (:error result))
+                             (:fail result)
+                             (:error result)))
              (when (pos? (+ (:fail result) (:error result)))
                (System/exit 1))))}
   

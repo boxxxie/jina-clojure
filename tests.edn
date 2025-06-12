@@ -1,11 +1,8 @@
 #kaocha/v1
 {:tests [{:id :unit
           :test-paths ["test"]
-          :ns-patterns [".*-test$"]}]}
-#kaocha/v1
-{:tests [{:id :unit
-          :test-paths ["test"]
-          :source-paths ["src"]}]
+          :source-paths ["src"]
+          :ns-patterns [".*-test$"]}]
  :reporter [kaocha.report/documentation]
  :color? true
  :randomize? false}
