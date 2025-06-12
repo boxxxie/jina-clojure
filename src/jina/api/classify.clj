@@ -33,10 +33,12 @@
 (defn- validate-jina-embeddings-v3-input
   "Validates input format for jina-embeddings-v3 model."
   [input]
-  (let [has-image? (some #(contains? % :image) input)]
-    (when has-image?
-      (throw (ex-info "jina-embeddings-v3 model does not support image inputs"
-                      {:input input :model "jina-embeddings-v3"})))))
+  (when-not (vector? input)
+    (throw (ex-info "jina-embeddings-v3 model requires input to be a vector"
+                    {:input input :model "jina-embeddings-v3"})))
+  (when-not (every? string? input)
+    (throw (ex-info "jina-embeddings-v3 model requires input to be an array of strings only"
+                    {:input input :model "jina-embeddings-v3"}))))
 
 (defn- validate-jina-clip-v2-input
   "Validates input format for jina-clip-v2 model."
