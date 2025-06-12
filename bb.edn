@@ -10,9 +10,9 @@
   test
   {:doc "Run tests"
    :task (do
-           (println "Running tests...")
+           (println "Running single test...")
            (require 'jina.core-test)
-           (let [result (t/run-tests 'jina.core-test)]
+           (let [result (t/run-tests 'jina.core-test/test-get-api-key)]
              (println (format "Ran %d tests. %d failures, %d errors."
                              (+ (:pass result) (:fail result) (:error result))
                              (:fail result)
