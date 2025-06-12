@@ -10,9 +10,12 @@
   (fn [f]
     ;; This fixture sets a dummy API key for tests that don't make actual API calls.
     ;; For integration tests, ensure JINA_API_KEY is set in your environment.
-    (System/setProperty "JINA_API_KEY" (or (System/getenv "JINA_API_KEY") "dummy-api-key"))
-    (f)
-    (System/clearProperty "JINA_API_KEY")))
+    (let [existing-key (System/getenv "JINA_API_KEY")]
+      (when-not existing-key
+        (System/setProperty "JINA_API_KEY" "dummy-api-key"))
+      (f)
+      (when-not existing-key
+        (System/clearProperty "JINA_API_KEY")))))
 
 (deftest test-get-api-key
   (testing "get-api-key retrieves from environment variable"
