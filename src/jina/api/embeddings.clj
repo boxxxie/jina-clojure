@@ -1,7 +1,7 @@
 (ns jina.api.embeddings
   (:require [jina.util :refer [jina-api-request]]))
 
-(defn jina-embeddings
+(defn embeddings
   "Converts text/images to fixed-length vectors using Jina AI Embeddings API.
 
   Input:
@@ -20,7 +20,7 @@
     (jina-api-request "/embeddings" body)))
 
 
-#_(jina-embeddings ["Hello, world!"])
+#_(embeddings ["Hello, world!"])
 
 ;; output
 #_{
@@ -35,7 +35,7 @@
    }
 
 
-#_(jina-embeddings ["Hello, world!" "there is no spoon"] {:dimensions 10})
+#_(embeddings ["Hello, world!" "there is no spoon"] {:dimensions 10})
 
 ;; output
 #_{:model  "jina-embeddings-v3",
