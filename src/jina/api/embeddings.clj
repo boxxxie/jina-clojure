@@ -7,7 +7,7 @@
   Input:
   - `input`: A vector of strings or objects to be embedded.
   - `opts`: An optional map of additional parameters:
-    - `:model` (string, default: \"jina-embeddings-v3\"): Identifier of the model to use (e.g., jina-embeddings-v3).
+    - `:model` (string, default: \"jina-embeddings-v3\"): Identifier of the model to use (e.g., jina-embeddings-v3). **Required by API - defaults to jina-embeddings-v3 if not specified.**
     - `:embedding_type` (string, default: \"float\"): The format of the returned embeddings (float, base64, binary, ubinary).
     - `:task` (string): Specifies the intended downstream application to optimize embedding output (retrieval.query, retrieval.passage, text-matching, classification, separation).
     - `:dimensions` (integer): Truncates output embeddings to the specified size if set.
@@ -15,7 +15,8 @@
     - `:late_chunking` (boolean, default: false): If true, concatenates all sentences in input and treats as a single input for late chunking.
     - `:truncate` (boolean, default: false): If true, the model will automatically drop the tail that extends beyond the maximum context length allowed by the model instead of throwing an error."
   [input & opts]
-  (let [body (merge {:input input} (first opts))]
+  (let [default-opts {:model "jina-embeddings-v3"}
+        body (merge {:input input} default-opts (first opts))]
     (jina-api-request "/embeddings" body)))
 
 
