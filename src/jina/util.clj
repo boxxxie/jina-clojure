@@ -1,5 +1,5 @@
 (ns jina.util
-  (:require [clojure.data.json :as json]
+  (:require [cheshire.core :as json]
             [clj-http.client :as http]))
 
 (def ^:private jina-api-base-url "https://api.jina.ai/v1")
