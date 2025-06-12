@@ -56,20 +56,12 @@
                         {:input input :model model :errors errors}))))
     
     "jina-clip-v2"
-    (let [text-valid? (m/validate jina-clip-v2-text-input-schema input)
-          image-valid? (m/validate jina-clip-v2-image-input-schema input)]
-      (when-not (or text-valid? image-valid?)
-        (let [text-errors (-> jina-clip-v2-text-input-schema
-                              (m/explain input)
-                              (me/humanize))
-              image-errors (-> jina-clip-v2-image-input-schema
-                               (m/explain input)
-                               (me/humanize))]
-          (throw (ex-info "jina-clip-v2 model requires input to be either all text objects or all image objects"
-                          {:input input 
-                           :model model 
-                           :text-errors text-errors 
-                           :image-errors image-errors})))))
+    (when-not (m/validate jina-clip-v2-input-schema input)
+      (let [errors (-> jina-clip-v2-input-schema
+                       (m/explain input)
+                       (me/humanize))]
+        (throw (ex-info "jina-clip-v2 model requires input to be a vector of objects with either 'text' or 'image' keys"
+                       {:input input :model model :errors errors}))))
     
     true))
 
