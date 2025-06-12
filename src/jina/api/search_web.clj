@@ -31,6 +31,61 @@
   (let [headers (first opts)]
     (jina-search-request q headers)))
 
+(defn search-page
+  "Search a specific page of results.
+  
+  Input:
+  - `q`: The search query string.
+  - `page`: The page number (0-based).
+  - `opts`: Optional map of additional parameters (same as `call` function)."
+  [q page & opts]
+  (let [headers (merge (first opts) {:page page})]
+    (call q headers)))
+
+(defn search-pages
+  "Search multiple pages and return a lazy sequence of results.
+  
+  Input:
+  - `q`: The search query string.
+  - `start-page`: Starting page number (0-based, default: 0).
+  - `max-pages`: Maximum number of pages to fetch (default: 5).
+  - `opts`: Optional map of additional parameters (same as `call` function).
+  
+  Returns a lazy sequence where each element is a page of search results."
+  [q & {:keys [start-page max-pages] :or {start-page 0 max-pages 5} :as opts}]
+  (let [search-opts (dissoc opts :start-page :max-pages)]
+    (map #(search-page q % search-opts) 
+         (range start-page (+ start-page max-pages)))))
+
+(defn search-all-results
+  "Search multiple pages and return all results flattened into a single sequence.
+  
+  Input:
+  - `q`: The search query string.
+  - `start-page`: Starting page number (0-based, default: 0).
+  - `max-pages`: Maximum number of pages to fetch (default: 5).
+  - `opts`: Optional map of additional parameters (same as `call` function).
+  
+  Returns a lazy sequence of individual search result items from all pages."
+  [q & {:keys [start-page max-pages] :or {start-page 0 max-pages 5} :as opts}]
+  (let [search-opts (dissoc opts :start-page :max-pages)]
+    (->> (search-pages q :start-page start-page :max-pages max-pages)
+         (mapcat :data))))
+
+(defn search-until
+  "Search pages until a condition is met or no more results are found.
+  
+  Input:
+  - `q`: The search query string.
+  - `pred`: A predicate function that takes a page response and returns true to stop.
+  - `opts`: Optional map of additional parameters (same as `call` function).
+  
+  Returns a lazy sequence of page responses until the predicate returns true."
+  [q pred & opts]
+  (let [search-opts (first opts)]
+    (take-while #(not (pred %))
+                (map #(search-page q % search-opts) (range)))))
+
 
 #_(call "latest AI research papers")
 
@@ -83,3 +138,18 @@
                       :usage       {:tokens 1000}}],
  :meta              {:usage {:tokens 10000}},
  :execution_time_ms 1722.374517}
+
+;; Pagination examples:
+
+#_(search-page "AI research" 0)  ; First page
+#_(search-page "AI research" 1)  ; Second page
+
+#_(search-pages "AI research" :start-page 0 :max-pages 3)  ; Get first 3 pages
+
+#_(search-all-results "AI research" :max-pages 2)  ; Get all results from first 2 pages flattened
+
+;; Search until we find a page with fewer than 10 results (indicating end of results)
+#_(search-until "AI research" #(< (count (:data %)) 10))
+
+;; Search with additional options
+#_(search-pages "AI research" :start-page 1 :max-pages 2 :num 5 :hl "en")
