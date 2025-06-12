@@ -159,6 +159,7 @@
   
   Numerical fields (like tokens, execution_time_ms) are summed.
   List fields (like :data) are concatenated.
+  Status fields (like :code, :status) use the value from the first result.
   Other fields use the value from the first non-nil result.
   
   Input:
@@ -167,27 +168,41 @@
   Returns a single aggregated result map."
   [results]
   (when (seq results)
-    (let [non-empty-results (filter some? results)]
+    (let [non-empty-results (filter some? results)
+          ;; Fields that should not be summed (status codes, etc.)
+          non-summable-fields #{:code :status}]
       (if (empty? non-empty-results)
         nil
         (reduce
           (fn [acc result]
-            (merge-with
-              (fn [v1 v2]
-                (cond
-                  ;; Sum numerical values
-                  (and (number? v1) (number? v2)) (+ v1 v2)
-                  ;; Concatenate sequences/vectors
-                  (and (sequential? v1) (sequential? v2)) (concat v1 v2)
-                  ;; For maps, recursively merge
-                  (and (map? v1) (map? v2)) (merge-with
-                                              (fn [nested-v1 nested-v2]
-                                                (if (and (number? nested-v1) (number? nested-v2))
-                                                  (+ nested-v1 nested-v2)
-                                                  (or nested-v2 nested-v1)))
-                                              v1 v2)
-                  ;; Use second value if first is nil, otherwise keep first
-                  :else (or v1 v2)))
+            (reduce-kv
+              (fn [merged-acc k v]
+                (let [existing-val (get merged-acc k)]
+                  (cond
+                    ;; Don't sum status codes and similar fields - keep first value
+                    (contains? non-summable-fields k) 
+                    (assoc merged-acc k (or existing-val v))
+                    
+                    ;; Sum numerical values (except status codes)
+                    (and (number? existing-val) (number? v)) 
+                    (assoc merged-acc k (+ existing-val v))
+                    
+                    ;; Concatenate sequences/vectors
+                    (and (sequential? existing-val) (sequential? v)) 
+                    (assoc merged-acc k (concat existing-val v))
+                    
+                    ;; For maps, recursively merge with number summing
+                    (and (map? existing-val) (map? v)) 
+                    (assoc merged-acc k 
+                           (merge-with
+                             (fn [nested-v1 nested-v2]
+                               (if (and (number? nested-v1) (number? nested-v2))
+                                 (+ nested-v1 nested-v2)
+                                 (or nested-v2 nested-v1)))
+                             existing-val v))
+                    
+                    ;; Use existing value if present, otherwise use new value
+                    :else (assoc merged-acc k (or existing-val v)))))
               acc
               result))
           (first non-empty-results)
