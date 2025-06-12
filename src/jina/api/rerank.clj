@@ -12,7 +12,8 @@
     - `:top_n` (integer): The number of most relevant documents or indices to return, defaults to the length of documents.
     - `:return_documents` (boolean, default: true): If false, returns only the index and relevance score without the document text. If true, returns the index, text, and relevance score."
   [query documents & opts]
-  (let [body (merge {:query query :documents documents} (first opts))]
+  (let [default-opts {:model "jina-reranker-v2-base-multilingual"}
+        body         (merge {:query query :documents documents} default-opts (first opts))]
     (jina-api-request "/rerank" body)))
 
 
