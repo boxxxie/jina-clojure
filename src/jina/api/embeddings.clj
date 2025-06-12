@@ -21,3 +21,31 @@
 
 
 #_(jina-embeddings ["Hello, world!"])
+
+;; output
+#_{
+   :model  "jina-embeddings-v3",
+   :object "list",
+   :usage  {:total_tokens 6, :prompt_tokens 6},
+   :data   [
+            {:object    "embedding",
+             :index     0,
+             :embedding [0.11442348 -0.11122073 0.13124809 ...]}
+            ]
+   }
+
+
+#_(jina-embeddings ["Hello, world!" "there is no spoon"] {:dimensions 10})
+
+;; output
+#_{:model  "jina-embeddings-v3",
+   :object "list",
+   :usage  {:total_tokens  13,
+            :prompt_tokens 13},
+   :data   [
+            {:object    "embedding",
+             :index     0,
+             :embedding [0.39906722 -0.38789722 0.45774525 0.06643874 0.27025834 -0.39918035 -0.1370097 0.41541225 -0.062082075 -0.22081324]}
+            {:object    "embedding",
+             :index     1,
+             :embedding [0.22698139 -0.17781383 0.41603658 -0.08164376 0.3316518 -0.08299294 -0.22000621 0.70784235 0.13058735 0.23180217]}]}
