@@ -1,6 +1,57 @@
 (ns jina.api.classify
   (:require [jina.util :refer [jina-api-request]]))
 
+
+
+;; jina-embeddings-v3 input example JSON
+{
+ "model"  : "jina-embeddings-v3",
+ "input"  : [
+             "Calculate the compound interest on a principal of $10,000 invested for 5 years at an annual rate of 5%, compounded quarterly.",
+             "分析使用CRISPR基因编辑技术在人类胚胎中的伦理影响。考虑潜在的医疗益处和长期社会后果。",
+             "AIが自意識を持つディストピアの未来を舞台にした短編小説を書いてください。人間とAIの関係や意識の本質をテーマに探求してください。",
+             "Erklären Sie die Unterschiede zwischen Merge-Sort und Quicksort-Algorithmen in Bezug auf Zeitkomplexität, Platzkomplexität und Leistung in der Praxis.",
+             "Write a poem about the beauty of nature and its healing power on the human soul.",
+             "Translate the following sentence into French: The quick brown fox jumps over the lazy dog."
+             ],
+ "labels" : [
+             "Simple task",
+             "Complex reasoning",
+             "Creative writing"
+             ]
+ }
+
+;; jina-clip-v2 input example JSON
+{
+ "model"  : "jina-clip-v2",
+ "input"  : [
+             {
+              "text" : "A sleek smartphone with a high-resolution display and multiple camera lenses"
+              },
+             {
+              "text" : "Fresh sushi rolls served on a wooden board with wasabi and ginger"
+              },
+             {
+              "image" : "https://picsum.photos/id/11/367/267"
+              },
+             {
+              "image" : "https://picsum.photos/id/22/367/267"
+              },
+             {
+              "text" : "Vibrant autumn leaves in a dense forest with sunlight filtering through"
+              },
+             {
+              "image" : "https://picsum.photos/id/8/367/267"
+              }
+             ],
+ "labels" : [
+             "Technology and Gadgets",
+             "Food and Dining",
+             "Nature and Outdoors",
+             "Urban and Architecture"
+             ]
+ }
+
 (defn call
   "Zero-shot classification for text or images using Jina AI Classifier API.
 
@@ -21,13 +72,16 @@
         {:model "jina-embeddings-v3"})
 
 ;; output
-#_{:data [{:index 0,
-           :input {"text" "I love this new smartphone! The camera quality is amazing."},
+#_{:usage {:total_tokens 38}, :data [{:object "classification", :index 0, :prediction "positive", :score 0.3556700050830841, :predictions [{:label "positive", :score 0.3556700050830841} {:label "negative", :score 0.3169832229614258} {:label "neutral", :score 0.3273467719554901}]} {:object "classification", :index 1, :prediction "negative", :score 0.3376658260822296, :predictions [{:label "positive", :score 0.32943376898765564} {:label "negative", :score 0.3376658260822296} {:label "neutral", :score 0.33290040493011475}]}]}
+
+;; output
+#_{:data [{:index      0,
+           :input      {"text" "I love this new smartphone! The camera quality is amazing."},
            :prediction [{:label "positive", :score 0.92}
                         {:label "neutral", :score 0.06}
                         {:label "negative", :score 0.02}]}
-          {:index 1,
-           :input {"text" "The delivery was delayed and the package was damaged."},
+          {:index      1,
+           :input      {"text" "The delivery was delayed and the package was damaged."},
            :prediction [{:label "negative", :score 0.89}
                         {:label "neutral", :score 0.08}
                         {:label "positive", :score 0.03}]}]}
