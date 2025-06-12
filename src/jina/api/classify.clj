@@ -4,35 +4,37 @@
 
 
 ;; jina-embeddings-v3 input example EDN
-{:model "jina-embeddings-v3"
- :input ["Calculate the compound interest on a principal of $10,000 invested for 5 years at an annual rate of 5%, compounded quarterly."
-         "分析使用CRISPR基因编辑技术在人类胚胎中的伦理影响。考虑潜在的医疗益处和长期社会后果。"
-         "AIが自意識を持つディストピアの未来を舞台にした短編小説を書いてください。人間とAIの関係や意識の本質をテーマに探求してください。"
-         "Erklären Sie die Unterschiede zwischen Merge-Sort und Quicksort-Algorithmen in Bezug auf Zeitkomplexität, Platzkomplexität und Leistung in der Praxis."
-         "Write a poem about the beauty of nature and its healing power on the human soul."
-         "Translate the following sentence into French: The quick brown fox jumps over the lazy dog."]
- :labels ["Simple task"
-          "Complex reasoning"
-          "Creative writing"]}
+(def example-jina-embeddings-v3
+  {:model  "jina-embeddings-v3"
+   :input  ["Calculate the compound interest on a principal of $10,000 invested for 5 years at an annual rate of 5%, compounded quarterly."
+            "分析使用CRISPR基因编辑技术在人类胚胎中的伦理影响。考虑潜在的医疗益处和长期社会后果。"
+            "AIが自意識を持つディストピアの未来を舞台にした短編小説を書いてください。人間とAIの関係や意識の本質をテーマに探求してください。"
+            "Erklären Sie die Unterschiede zwischen Merge-Sort und Quicksort-Algorithmen in Bezug auf Zeitkomplexität, Platzkomplexität und Leistung in der Praxis."
+            "Write a poem about the beauty of nature and its healing power on the human soul."
+            "Translate the following sentence into French: The quick brown fox jumps over the lazy dog."]
+   :labels ["Simple task"
+            "Complex reasoning"
+            "Creative writing"]})
 
 ;; jina-clip-v2 input example EDN
-{:model "jina-clip-v2"
- :input [{:text "A sleek smartphone with a high-resolution display and multiple camera lenses"}
-         {:text "Fresh sushi rolls served on a wooden board with wasabi and ginger"}
-         {:image "https://picsum.photos/id/11/367/267"}
-         {:image "https://picsum.photos/id/22/367/267"}
-         {:text "Vibrant autumn leaves in a dense forest with sunlight filtering through"}
-         {:image "https://picsum.photos/id/8/367/267"}]
- :labels ["Technology and Gadgets"
-          "Food and Dining"
-          "Nature and Outdoors"
-          "Urban and Architecture"]}
+(def example-jina-clip-v2
+  {:model  "jina-clip-v2"
+   :input  [{:text "A sleek smartphone with a high-resolution display and multiple camera lenses"}
+            {:text "Fresh sushi rolls served on a wooden board with wasabi and ginger"}
+            {:image "https://picsum.photos/id/11/367/267"}
+            {:image "https://picsum.photos/id/22/367/267"}
+            {:text "Vibrant autumn leaves in a dense forest with sunlight filtering through"}
+            {:image "https://picsum.photos/id/8/367/267"}]
+   :labels ["Technology and Gadgets"
+            "Food and Dining"
+            "Nature and Outdoors"
+            "Urban and Architecture"]})
 
 (defn- validate-input
   "Validates input format based on the model being used."
-  [input model]
-  (let [has-text?  (some #(or (contains? % "text") (contains? % :text)) input)
-        has-image? (some #(or (contains? % "image") (contains? % :image)) input)]
+  [model input]
+  (let [has-text?  (some #(contains? % :text) input)
+        has-image? (some #(contains? % :image) input)]
     (cond
       (and has-text? has-image?)
       (throw (ex-info "Cannot mix text and image objects in the same request"
@@ -47,6 +49,9 @@
                       {:input input :model model}))
 
       :else true)))
+
+(validate-input "jina-embeddings-v3" example-jina-embeddings-v3)
+(validate-input "jina-clip-v2" example-jina-clip-v2)
 
 (defn call
   "Zero-shot classification for text or images using Jina AI Classifier API.
@@ -77,13 +82,13 @@
         model        (:model merged-opts)]
     (validate-input input model)
     (let [body (merge {:input input :labels labels} merged-opts)]
-      (jina-api-request "/classify" body))))
+      (jina-api-request "/classify") body)))
 
 
-#_(call [{"text" "I love this new smartphone! The camera quality is amazing."}
-         {"text" "The delivery was delayed and the package was damaged."}]
-        ["positive" "negative" "neutral"]
-        {:model "jina-embeddings-v3"})
+#_(call
+    ["I love this new smartphone! The camera quality is amazing."
+     "The delivery was delayed and the package was damaged."]
+    ["positive" "negative" "neutral"])
 
 ;; output
 #_{:usage {:total_tokens 38}, :data [{:object "classification", :index 0, :prediction "positive", :score 0.3556700050830841, :predictions [{:label "positive", :score 0.3556700050830841} {:label "negative", :score 0.3169832229614258} {:label "neutral", :score 0.3273467719554901}]} {:object "classification", :index 1, :prediction "negative", :score 0.3376658260822296, :predictions [{:label "positive", :score 0.32943376898765564} {:label "negative", :score 0.3376658260822296} {:label "neutral", :score 0.33290040493011475}]}]}
