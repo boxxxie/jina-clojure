@@ -1,5 +1,5 @@
 (ns jina.api.search-web
-  (:require [jina.util :refer [jina-api-request]]))
+  (:require [jina.util :refer [jina-reader-request]]))
 
 (defn call
   "Search the web for information using Jina AI Search API.
@@ -28,8 +28,8 @@
     - `:X-Proxy-Url` (string): Utilizes your proxy to access URLs.
     - `:X-Locale` (string): Controls the browser locale to render the page."
   [q & opts]
-  (let [body (merge {:q q} (first opts))]
-    (jina-api-request "/search-web" body)))
+  (let [headers (first opts)]
+    (jina-reader-request q headers)))
 
 
 #_(call "latest AI research papers")

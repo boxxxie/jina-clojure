@@ -40,16 +40,19 @@
          (throw e))))))
 
 (defn jina-reader-request
-  "Special request function for Jina Reader API which uses GET and different URL pattern"
-  [url opts]
+  "Special request function for Jina Reader and Search APIs which use GET and different URL patterns"
+  [url-or-query opts]
   (let [api-key    (get-api-key)
-        reader-url (str "https://r.jina.ai/" url)
+        ;; Determine if this is a search query or URL based on content
+        is-search? (not (re-matches #"^https?://.*" url-or-query))
+        base-url   (if is-search? "https://s.jina.ai/" "https://r.jina.ai/")
+        full-url   (str base-url url-or-query)
         start-time (System/nanoTime)
         headers    (merge {"Authorization" (str "Bearer " api-key)
                            "Accept" "application/json"}
                           opts)]
     (try
-      (let [response    (http/get reader-url
+      (let [response    (http/get full-url
                                   {:headers          headers
                                    :throw-exceptions false})
             end-time    (System/nanoTime)
@@ -60,5 +63,5 @@
           (throw (ex-info (str "HTTP " (:status response) ": " (:body response))
                           {:status (:status response) :body (:body response)}))))
       (catch Exception e
-        (println "Error making Jina Reader API request:" (.getMessage e))
+        (println "Error making Jina Reader/Search API request:" (.getMessage e))
         (throw e)))))
