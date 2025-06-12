@@ -154,6 +154,20 @@
 ;; Search with additional options
 #_(search-pages "AI research" :start-page 1 :max-pages 2 :num 5 :hl "en")
 
+(defn- aggregate-maps
+  "Recursively aggregates two maps, summing numerical values and preserving other values."
+  [map1 map2]
+  (merge-with
+    (fn [v1 v2]
+      (cond
+        ;; Sum numerical values
+        (and (number? v1) (number? v2)) (+ v1 v2)
+        ;; Recursively merge nested maps
+        (and (map? v1) (map? v2)) (aggregate-maps v1 v2)
+        ;; Use second value if first is nil, otherwise keep first
+        :else (or v2 v1)))
+    map1 map2))
+
 (defn aggregate-search-results
   "Aggregates multiple search result pages into a single consolidated structure.
   
@@ -193,13 +207,7 @@
                     
                     ;; For maps, recursively merge with number summing
                     (and (map? existing-val) (map? v)) 
-                    (assoc merged-acc k 
-                           (merge-with
-                             (fn [nested-v1 nested-v2]
-                               (if (and (number? nested-v1) (number? nested-v2))
-                                 (+ nested-v1 nested-v2)
-                                 (or nested-v2 nested-v1)))
-                             existing-val v))
+                    (assoc merged-acc k (aggregate-maps existing-val v))
                     
                     ;; Use existing value if present, otherwise use new value
                     :else (assoc merged-acc k (or existing-val v)))))
