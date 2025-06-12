@@ -1,5 +1,7 @@
 (ns jina.api.classify
-  (:require [jina.util :refer [jina-api-request]]))
+  (:require [jina.util :refer [jina-api-request]]
+            [malli.core :as m]
+            [malli.error :as me]))
 
 
 
@@ -30,36 +32,47 @@
             "Nature and Outdoors"
             "Urban and Architecture"]})
 
-(defn- validate-jina-embeddings-v3-input
-  "Validates input format for jina-embeddings-v3 model."
-  [input]
-  (when-not (vector? input)
-    (throw (ex-info "jina-embeddings-v3 model requires input to be a vector"
-                    {:input input :model "jina-embeddings-v3"})))
-  (when-not (every? string? input)
-    (throw (ex-info "jina-embeddings-v3 model requires input to be an array of strings only"
-                    {:input input :model "jina-embeddings-v3"}))))
+;; Malli schemas for input validation
+(def jina-embeddings-v3-input-schema
+  "Schema for jina-embeddings-v3 input: vector of strings only"
+  [:vector :string])
 
-(defn- validate-jina-clip-v2-input
-  "Validates input format for jina-clip-v2 model."
-  [input]
-  (let [has-text?  (some #(contains? % :text) input)
-        has-image? (some #(contains? % :image) input)]
-    (cond
-      (and has-text? has-image?)
-      (throw (ex-info "Cannot mix text and image objects in the same request"
-                      {:input input :model "jina-clip-v2"}))
+(def jina-clip-v2-text-input-schema
+  "Schema for jina-clip-v2 text-only input"
+  [:vector [:map [:text :string]]])
 
-      (not has-image?)
-      (throw (ex-info "jina-clip-v2 model requires image inputs"
-                      {:input input :model "jina-clip-v2"})))))
+(def jina-clip-v2-image-input-schema
+  "Schema for jina-clip-v2 image-only input"
+  [:vector [:map [:image :string]]])
 
 (defn- validate-input
   "Validates input format based on the model being used."
   [model input]
   (case model
-    "jina-embeddings-v3" (validate-jina-embeddings-v3-input input)
-    "jina-clip-v2"       (validate-jina-clip-v2-input input)
+    "jina-embeddings-v3"
+    (when-not (m/validate jina-embeddings-v3-input-schema input)
+      (let [errors (-> jina-embeddings-v3-input-schema
+                       (m/explain input)
+                       (me/humanize))]
+        (throw (ex-info "jina-embeddings-v3 model requires input to be an array of strings only"
+                        {:input input :model model :errors errors}))))
+    
+    "jina-clip-v2"
+    (let [text-valid? (m/validate jina-clip-v2-text-input-schema input)
+          image-valid? (m/validate jina-clip-v2-image-input-schema input)]
+      (when-not (or text-valid? image-valid?)
+        (let [text-errors (-> jina-clip-v2-text-input-schema
+                              (m/explain input)
+                              (me/humanize))
+              image-errors (-> jina-clip-v2-image-input-schema
+                               (m/explain input)
+                               (me/humanize))]
+          (throw (ex-info "jina-clip-v2 model requires input to be either all text objects or all image objects"
+                          {:input input 
+                           :model model 
+                           :text-errors text-errors 
+                           :image-errors image-errors})))))
+    
     true))
 
 #_(validate-input (:model example-jina-embeddings-v3) (:input example-jina-embeddings-v3))
