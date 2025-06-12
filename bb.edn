@@ -9,13 +9,14 @@
   test
   {:doc "Run tests"
    :task (do
-           (println "Running single test...")
+           (println "Running tests...")
            (require 'jina.core-test)
-           (let [result (t/test-var #'jina.core-test/test-get-api-key)]
-             (println (format "Ran 1 test. %d failures, %d errors."
-                             (:fail result 0)
-                             (:error result 0)))
-             (when (pos? (+ (:fail result 0) (:error result 0)))
+           (let [result (t/run-tests 'jina.core-test)]
+             (println (format "Ran %d tests. %d failures, %d errors."
+                             (+ (:pass result) (:fail result) (:error result))
+                             (:fail result)
+                             (:error result)))
+             (when (pos? (+ (:fail result) (:error result)))
                (System/exit 1))))}
   
   kaocha
