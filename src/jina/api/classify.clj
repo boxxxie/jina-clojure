@@ -37,13 +37,11 @@
   "Schema for jina-embeddings-v3 input: vector of strings only"
   [:vector :string])
 
-(def jina-clip-v2-text-input-schema
-  "Schema for jina-clip-v2 text-only input"
-  [:vector [:map [:text :string]]])
-
-(def jina-clip-v2-image-input-schema
-  "Schema for jina-clip-v2 image-only input"
-  [:vector [:map [:image :string]]])
+(def jina-clip-v2-input-schema
+  "Schema for jina-clip-v2 input: vector of objects with either text or image keys"
+  [:vector [:or 
+            [:map [:text :string]]
+            [:map [:image :string]]]])
 
 (defn- validate-input
   "Validates input format based on the model being used."
