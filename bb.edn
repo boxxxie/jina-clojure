@@ -1,6 +1,23 @@
-{:paths ["src" "resources"]
- :deps {clj-http/clj-http {:mvn/version "3.12.3"}
-        cheshire/cheshire {:mvn/version "5.11.0"}}
+{:min-bb-version "1.0.0"
+ :deps {org.clojure/data.json {:mvn/version "2.4.0"}
+        clj-http/clj-http {:mvn/version "3.12.3"}}
+ :paths ["src"]
  :tasks
- {:test {:requires ([clojure.test :as t])
-         :task (t/run-tests 'jina-clj-api.core-test)}}}
+ {:requires ([clojure.test :as t]
+             [clojure.java.shell :refer [sh]])
+  
+  test
+  {:doc "Run tests"
+   :task (do
+           (println "Running tests...")
+           (let [result (t/run-tests 'jina.core-test)]
+             (when (pos? (+ (:fail result) (:error result)))
+               (System/exit 1))))}
+  
+  repl
+  {:doc "Start a REPL"
+   :task (clojure "-M:repl")}
+  
+  clean
+  {:doc "Clean build artifacts"
+   :task (sh "rm" "-rf" "target" ".cpcache")}}}
