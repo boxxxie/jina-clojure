@@ -1,6 +1,6 @@
-(ns jina-clj-api.core-test
+(ns jina.core-test
   (:require [clojure.test :refer :all]
-            [jina-clj-api.core :as jina]))
+            [jina.core :as jina]))
 
 ;; IMPORTANT: For actual integration tests, set the JINA_API_KEY environment variable.
 ;; For example, in your shell: export JINA_API_KEY="YOUR_JINA_API_KEY_HERE"
