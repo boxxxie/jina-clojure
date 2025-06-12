@@ -1,7 +1,8 @@
 (ns jina.api.classify
   (:require [jina.util :refer [jina-api-request]]
             [malli.core :as m]
-            [malli.error :as me]))
+            [malli.error :as me]
+            [malli.dev.pretty :as mp]))
 
 
 
@@ -49,17 +50,17 @@
   (case model
     "jina-embeddings-v3"
     (when-not (m/validate jina-embeddings-v3-input-schema input)
-      (let [errors (-> jina-embeddings-v3-input-schema
-                       (m/explain input)
-                       (me/humanize))]
+      (let [explanation (m/explain jina-embeddings-v3-input-schema input)
+            errors (me/humanize explanation)]
+        (mp/explain explanation)
         (throw (ex-info "jina-embeddings-v3 model requires input to be an array of strings only"
                         {:input input :model model :errors errors}))))
 
     "jina-clip-v2"
     (when-not (m/validate jina-clip-v2-input-schema input)
-      (let [errors (-> jina-clip-v2-input-schema
-                       (m/explain input)
-                       (me/humanize))]
+      (let [explanation (m/explain jina-clip-v2-input-schema input)
+            errors (me/humanize explanation)]
+        (mp/explain explanation)
         (throw (ex-info "jina-clip-v2 model requires input to be a vector of objects with either 'text' or 'image' keys"
                         {:input input :model model :errors errors}))))
 
