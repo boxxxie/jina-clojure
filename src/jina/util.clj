@@ -16,15 +16,19 @@
 (defn jina-api-request
   [endpoint body]
   (let [api-key (get-api-key)
-        url (str jina-api-base-url endpoint)]
+        url (str jina-api-base-url endpoint)
+        start-time (System/nanoTime)]
     (try
       (let [response (http/post url
                                {:headers {"Authorization" (str "Bearer " api-key)
                                          "Content-Type" "application/json"}
                                 :body (json/write-str body)
-                                :throw false})]
+                                :throw false})
+            end-time (System/nanoTime)
+            duration-ms (/ (- end-time start-time) 1000000.0)]
         (if (< (:status response) 400)
-          (json/read-str (:body response) :key-fn keyword)
+          (let [parsed-response (json/read-str (:body response) :key-fn keyword)]
+            (assoc parsed-response :execution_time_ms duration-ms))
           (throw (ex-info (str "HTTP " (:status response) ": " (:body response))
                          {:status (:status response) :body (:body response)}))))
       (catch Exception e
