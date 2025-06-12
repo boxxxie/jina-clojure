@@ -35,40 +35,51 @@
 #_(call "latest AI research papers")
 
 ;; output
-#_{:query "latest AI research papers",
-   :results [{:title "Recent Advances in Artificial Intelligence Research",
-              :url "https://example.com/ai-research",
-              :content "This paper discusses the latest developments in AI...",
-              :snippet "Recent breakthroughs in machine learning and neural networks..."}
-             {:title "AI Research Trends 2024",
-              :url "https://example.com/ai-trends-2024", 
-              :content "An overview of current AI research directions...",
-              :snippet "Exploring the frontiers of artificial intelligence..."}]}
-
-
-#_(call "machine learning tutorials"
-        {:num 5
-         :hl "en"
-         :gl "US"
-         :X-Return-Format "markdown"
-         :X-With-Links-Summary "true"})
-
-;; output with specific formatting and options
-#_{:query "machine learning tutorials",
-   :results [{:title "Complete Machine Learning Guide",
-              :url "https://example.com/ml-guide",
-              :content "# Machine Learning Tutorial\n\nThis comprehensive guide covers...",
-              :snippet "Learn machine learning from basics to advanced concepts..."}],
-   :links_summary ["https://example.com/ml-guide" "https://example.com/python-ml"]}
-
-
-#_(call "site:github.com clojure web frameworks"
-        {:X-Site "https://github.com"
-         :num 10})
-
-;; output for site-specific search
-#_{:query "site:github.com clojure web frameworks",
-   :results [{:title "ring-clojure/ring: Clojure HTTP server abstraction",
-              :url "https://github.com/ring-clojure/ring",
-              :content "Ring is a Clojure web applications library...",
-              :snippet "A Clojure library that provides a simple abstraction..."}]}
+{:code              200,
+ :status            20000,
+ :data              [{:title       "Artificial Intelligence - arXiv",
+                      :url         "https://arxiv.org/list/cs.AI/recent",
+                      :description "Subjects: Artificial Intelligence (cs.AI); Computation and Language (cs.CL); Computer Vision and Pattern Recognition (cs.CV); Machine Learning (cs.",
+                      :usage       {:tokens 1000}}
+                     {:title       "Papers With Code: The latest in Machine Learning",
+                      :url         "https://paperswithcode.com/",
+                      :description "Stay informed on the latest trending ML papers with code, research developments, libraries, methods, and datasets. Read previous issues. Subscribe",
+                      :usage       {:tokens 1000}}
+                     {:title       "AI Research Papers - Arize AI",
+                      :url         "https://arize.com/ai-research-papers",
+                      :description "Keep up with the latest in AI research. Follow the latest in generative AI research papers and stay ahead of cutting-edge advancements.",
+                      :usage       {:tokens 1000}}
+                     {:title       "dair-ai/ML-Papers-of-the-Week - GitHub",
+                      :url         "https://github.com/dair-ai/ML-Papers-of-the-Week",
+                      :description "Validated AI discoveries – From 50 AI research papers on agents and virtual environments, CodeScientist proposed 19 findings. Of these, 6 were judged",
+                      :usage       {:tokens 1000}}
+                     {:title       "Noteworthy AI Research Papers of 2024 (Part One) - Ahead of AI",
+                      :url         "https://magazine.sebastianraschka.com/p/ai-research-papers-2024-part-1",
+                      :description "This AI Research Highlights of 2024 article. It covers a variety of topics, from mixture-of-experts models to new LLM scaling laws for precision.",
+                      :date        "Dec 31, 2024",
+                      :usage       {:tokens 1000}}
+                     {:title       "Journal of Artificial Intelligence Research",
+                      :url         "https://www.jair.org/",
+                      :description "The journal's scope encompasses all areas of AI, including agents and multi-agent systems, automated reasoning, constraint processing and search",
+                      :date        "Jan 6, 2025",
+                      :usage       {:tokens 1000}}
+                     {:title       "AI Paper with Code | Research Insights - Qualcomm",
+                      :url         "https://www.qualcomm.com/research/artificial-intelligence/papers",
+                      :description "Access AI paper with code and gain valuable research insights. Check out Qualcomm's cutting-edge advancements today. Explore now.",
+                      :usage       {:tokens 1000}}
+                     {:title       "Top AI Research Papers of 2024 - Association of Data Scientists",
+                      :url         "https://adasci.org/top-ai-research-papers-of-2024",
+                      :description "Top AI Research Papers of 2024 · 1. Mixtral of Experts (8th Jan 2024) · 2. Genie: Generative Interactive Environments (23rd Feb 2024) · 3. Accurate",
+                      :date        "Dec 30, 2024",
+                      :usage       {:tokens 1000}}
+                     {:title       "[P] Noteworthy AI Research Papers of 2024 (Part One) - Reddit",
+                      :url         "https://www.reddit.com/r/MachineLearning/comments/1htedss/p_noteworthy_ai_research_papers_of_2024_part_one",
+                      :description "I just picked from all the papers I've read that year, then I selected one that I particularly liked or found important/useful for my work for each month.",
+                      :date        "Jan 4, 2025",
+                      :usage       {:tokens 1000}}
+                     {:title       "Apple Machine Learning Research: Overview",
+                      :url         "https://machinelearning.apple.com/",
+                      :description "Apple machine learning teams are engaged in state of the art research in machine learning and artificial intelligence. Learn about the latest advancements.",
+                      :usage       {:tokens 1000}}],
+ :meta              {:usage {:tokens 10000}},
+ :execution_time_ms 1722.374517}
