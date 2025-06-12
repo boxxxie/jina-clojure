@@ -16,3 +16,26 @@
   [content & opts]
   (let [body (merge {:content content} (first opts))]
     (jina-api-request "/segment-text" body)))
+
+
+#_(call "This is a sample text that will be tokenized and segmented into meaningful chunks for processing.")
+
+;; output
+#_{:num_tokens 18,
+   :tokens ["This", "is", "a", "sample", "text", "that", "will", "be", "tokenized", "and", "segmented", "into", "meaningful", "chunks", "for", "processing", ".", ""]}
+
+
+#_(call "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
+        {:return_chunks true
+         :max_chunk_length 50
+         :return_tokens true})
+
+;; output with chunks and tokens
+#_{:num_tokens 23,
+   :tokens ["Lorem", "ipsum", "dolor", "sit", "amet", ",", "consectetur", "adipiscing", "elit", ".", "Sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua", ".", ""],
+   :chunks [{:text "Lorem ipsum dolor sit amet, consectetur adipiscing",
+             :start_index 0,
+             :end_index 49}
+            {:text "elit. Sed do eiusmod tempor incididunt ut labore",
+             :start_index 50,
+             :end_index 96}]}

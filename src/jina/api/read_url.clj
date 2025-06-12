@@ -42,3 +42,43 @@
   [url & opts]
   (let [body (merge {:url url} (first opts))]
     (jina-api-request "/read-url" body)))
+
+
+#_(call "https://example.com/article")
+
+;; output
+#_{:url "https://example.com/article",
+   :title "Sample Article Title",
+   :content "# Sample Article\n\nThis is the main content of the article...",
+   :description "A brief description of the article content",
+   :usage {:tokens 150}}
+
+
+#_(call "https://news.example.com/tech-article"
+        {:X-Return-Format "markdown"
+         :X-Remove-Selector "header,footer,.ads"
+         :X-Target-Selector "article"
+         :X-With-Links-Summary "true"})
+
+;; output with specific formatting and content filtering
+#_{:url "https://news.example.com/tech-article",
+   :title "Latest Tech News",
+   :content "# Latest Tech News\n\nThe technology sector continues to evolve...",
+   :description "Breaking news in technology and innovation",
+   :usage {:tokens 200},
+   :links_summary ["https://example.com/related1" "https://example.com/related2"]}
+
+
+#_(call "https://complex-site.com/page"
+        {:X-Engine "browser"
+         :X-Timeout 30
+         :X-Wait-For-Selector ".dynamic-content"
+         :X-With-Generated-Alt true
+         :X-Token-Budget 1000})
+
+;; output for complex dynamic content
+#_{:url "https://complex-site.com/page",
+   :title "Dynamic Content Page",
+   :content "# Dynamic Content\n\nThis content was loaded dynamically...",
+   :description "A page with JavaScript-rendered content",
+   :usage {:tokens 800}}

@@ -21,3 +21,34 @@
   [messages & opts]
   (let [body (merge {:messages messages} (first opts))]
     (jina-api-request "/deep-search" body)))
+
+
+#_(call [{:role "user" :content "What are the latest developments in quantum computing?"}])
+
+;; output
+#_{:id "deepsearch-123",
+   :object "deepsearch.completion",
+   :created 1234567890,
+   :model "jina-deepsearch-v1",
+   :choices [{:index 0,
+              :message {:role "assistant",
+                        :content "Based on my research, here are the latest developments in quantum computing..."},
+              :finish_reason "stop"}],
+   :usage {:prompt_tokens 15, :completion_tokens 250, :total_tokens 265}}
+
+
+#_(call [{:role "user" :content "Compare the performance of different machine learning frameworks"}]
+        {:reasoning_effort "high"
+         :max_returned_urls 5
+         :boost_hostnames ["arxiv.org" "github.com"]})
+
+;; output with enhanced reasoning and specific sources
+#_{:id "deepsearch-456",
+   :object "deepsearch.completion", 
+   :created 1234567891,
+   :model "jina-deepsearch-v1",
+   :choices [{:index 0,
+              :message {:role "assistant",
+                        :content "After extensive research and analysis, here's a comprehensive comparison..."},
+              :finish_reason "stop"}],
+   :usage {:prompt_tokens 25, :completion_tokens 400, :total_tokens 425}}

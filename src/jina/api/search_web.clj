@@ -30,3 +30,45 @@
   [q & opts]
   (let [body (merge {:q q} (first opts))]
     (jina-api-request "/search-web" body)))
+
+
+#_(call "latest AI research papers")
+
+;; output
+#_{:query "latest AI research papers",
+   :results [{:title "Recent Advances in Artificial Intelligence Research",
+              :url "https://example.com/ai-research",
+              :content "This paper discusses the latest developments in AI...",
+              :snippet "Recent breakthroughs in machine learning and neural networks..."}
+             {:title "AI Research Trends 2024",
+              :url "https://example.com/ai-trends-2024", 
+              :content "An overview of current AI research directions...",
+              :snippet "Exploring the frontiers of artificial intelligence..."}]}
+
+
+#_(call "machine learning tutorials"
+        {:num 5
+         :hl "en"
+         :gl "US"
+         :X-Return-Format "markdown"
+         :X-With-Links-Summary "true"})
+
+;; output with specific formatting and options
+#_{:query "machine learning tutorials",
+   :results [{:title "Complete Machine Learning Guide",
+              :url "https://example.com/ml-guide",
+              :content "# Machine Learning Tutorial\n\nThis comprehensive guide covers...",
+              :snippet "Learn machine learning from basics to advanced concepts..."}],
+   :links_summary ["https://example.com/ml-guide" "https://example.com/python-ml"]}
+
+
+#_(call "site:github.com clojure web frameworks"
+        {:X-Site "https://github.com"
+         :num 10})
+
+;; output for site-specific search
+#_{:query "site:github.com clojure web frameworks",
+   :results [{:title "ring-clojure/ring: Clojure HTTP server abstraction",
+              :url "https://github.com/ring-clojure/ring",
+              :content "Ring is a Clojure web applications library...",
+              :snippet "A Clojure library that provides a simple abstraction..."}]}
