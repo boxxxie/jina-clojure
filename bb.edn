@@ -3,8 +3,8 @@
         lambdaisland/kaocha {:mvn/version "1.87.1366"}}
  :paths ["src" "test"]
  :tasks
- {:requires ([clojure.test :as t]
-             [clojure.java.shell :refer [sh]])
+ {:requires [[clojure.test :as t]
+             [clojure.java.shell :refer [sh]]]
   
   test
   {:doc "Run tests"
