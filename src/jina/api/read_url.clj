@@ -1,5 +1,5 @@
 (ns jina.api.read-url
-  (:require [jina.util :refer [jina-api-request]]))
+  (:require [jina.util :refer [jina-reader-request]]))
 
 (defn call
   "Retrieve/parse content from a URL using Jina AI Reader API.
@@ -40,8 +40,8 @@
     - `:X-Md-Link-Style` (string, enum: \"referenced\", \"discarded\"): When not set, links are embedded directly within the text. Sets referenced to list links at the end, referenced by numbers in the text. Sets discarded to replace links with their anchor text.
     - `:X-Md-Link-Reference-Style` (string, enum: \"collapse\", \"shortcut\"): Sets Markdown reference link format (passed to Turndown). Set to collapse, shortcut or do not set this header."
   [url & opts]
-  (let [body (merge {:url url} (first opts))]
-    (jina-api-request "/read-url" body)))
+  (let [headers (first opts)]
+    (jina-reader-request url headers)))
 
 
 #_(call "https://example.com/article")

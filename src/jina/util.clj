@@ -14,23 +14,50 @@
       (throw (ex-info "JINA_API_KEY environment variable not set." {:error :api-key-missing})))))
 
 (defn jina-api-request
-  [endpoint body]
+  ([endpoint body]
+   (jina-api-request endpoint body {}))
+  ([endpoint body extra-headers]
+   (let [api-key    (get-api-key)
+         url        (str jina-api-base-url endpoint)
+         start-time (System/nanoTime)
+         headers    (merge {"Authorization" (str "Bearer " api-key)
+                            "Content-Type"  "application/json"}
+                           extra-headers)]
+     (try
+       (let [response    (http/post url
+                                    {:headers          headers
+                                     :body             (json/encode body)
+                                     :throw-exceptions false})
+             end-time    (System/nanoTime)
+             duration-ms (/ (- end-time start-time) 1000000.0)]
+         (if (< (:status response) 400)
+           (let [parsed-response (json/decode (:body response) keyword)]
+             (assoc parsed-response :execution_time_ms duration-ms))
+           (throw (ex-info (str "HTTP " (:status response) ": " (:body response))
+                           {:status (:status response) :body (:body response)}))))
+       (catch Exception e
+         (println "Error making Jina API request:" (.getMessage e))
+         (throw e))))))
+
+(defn jina-reader-request
+  "Special request function for Jina Reader API which uses GET and different URL pattern"
+  [url opts]
   (let [api-key    (get-api-key)
-        url        (str jina-api-base-url endpoint)
-        start-time (System/nanoTime)]
+        reader-url (str "https://r.jina.ai/" url)
+        start-time (System/nanoTime)
+        headers    (merge {"Authorization" (str "Bearer " api-key)}
+                          opts)]
     (try
-      (let [response    (http/post url
-                                   {:headers          {"Authorization" (str "Bearer " api-key)
-                                                       "Content-Type"  "application/json"}
-                                    :body             (json/encode body)
-                                    :throw-exceptions false})
+      (let [response    (http/get reader-url
+                                  {:headers          headers
+                                   :throw-exceptions false})
             end-time    (System/nanoTime)
             duration-ms (/ (- end-time start-time) 1000000.0)]
         (if (< (:status response) 400)
-          (let [parsed-response (json/decode (:body response) keyword)]
-            (assoc parsed-response :execution_time_ms duration-ms))
+          {:content (:body response)
+           :execution_time_ms duration-ms}
           (throw (ex-info (str "HTTP " (:status response) ": " (:body response))
                           {:status (:status response) :body (:body response)}))))
       (catch Exception e
-        (println "Error making Jina API request:" (.getMessage e))
+        (println "Error making Jina Reader API request:" (.getMessage e))
         (throw e)))))
