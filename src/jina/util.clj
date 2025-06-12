@@ -1,6 +1,6 @@
 (ns jina.util
   (:require [clojure.data.json :as json]
-            [babashka.http-client :as http]))
+            [clj-http.client :as http]))
 
 (def ^:private jina-api-base-url "https://api.jina.ai/v1")
 
@@ -23,7 +23,7 @@
                                {:headers {"Authorization" (str "Bearer " api-key)
                                          "Content-Type" "application/json"}
                                 :body (json/write-str body)
-                                :throw false})
+                                :throw-exceptions false})
             end-time (System/nanoTime)
             duration-ms (/ (- end-time start-time) 1000000.0)]
         (if (< (:status response) 400)
