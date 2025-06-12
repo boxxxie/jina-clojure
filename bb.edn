@@ -1,37 +1,14 @@
-{:min-bb-version "1.0.0"
- :deps {org.clojure/data.json {:mvn/version "2.4.0"}
-        lambdaisland/kaocha {:mvn/version "1.87.1366"}}
- :paths ["src" "test"]
- :tasks
- {:requires [[clojure.java.shell :refer [sh]]]
-  
-  test
-  {:doc "Run all tests with Babashka"
-   :task (do
-           (require 'clojure.test)
-           (require 'jina.core-test)
-           (clojure.test/run-tests 'jina.core-test))}
+{
+ :min-bb-version "1.0.0"
 
-  test-single
-  {:doc "Run a single test by name (usage: bb test-single test-get-api-key)"
-   :task (let [test-name (first *command-line-args*)]
-           (if test-name
-             (do
-               (require 'clojure.test)
-               (require 'jina.core-test)
-               (if-let [test-var (ns-resolve 'jina.core-test (symbol test-name))]
-                 (clojure.test/test-var test-var)
-                 (println (str "Test not found: " test-name))))
-             (println "Usage: bb test-single <test-name>\nExample: bb test-single test-get-api-key")))}
-  
-  kaocha
-  {:doc "Run tests with Kaocha"
-   :task (clojure "-M:test")}
-  
-  repl
-  {:doc "Start a REPL"
-   :task (clojure "-M:repl")}
-  
-  clean
-  {:doc "Clean build artifacts"
-   :task (sh "rm" "-rf" "target" ".cpcache")}}}
+ :deps  {org.clojure/data.json {:mvn/version "2.4.0"}
+         lambdaisland/kaocha   {:mvn/version "1.87.1366"}}
+ :paths ["src" "test"]
+ :tasks {:requires [[clojure.java.shell :refer [sh]]]
+
+         repl {:doc  "Start a REPL"
+               :task (clojure "-M:repl")}
+
+         clean {:doc  "Clean build artifacts"
+                :task (sh "rm" "-rf" "target" ".cpcache")}}
+ }
