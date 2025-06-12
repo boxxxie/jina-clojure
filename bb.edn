@@ -6,19 +6,27 @@
  {:requires [[clojure.java.shell :refer [sh]]]
   
   test
-  {:doc "Run all tests"
-   :task (clojure "-M" "-e" "(require 'clojure.test) (require 'jina.core-test) (clojure.test/run-tests 'jina.core-test)")}
+  {:doc "Run all tests with Babashka"
+   :task (do
+           (require 'clojure.test)
+           (require 'jina.core-test)
+           (clojure.test/run-tests 'jina.core-test))}
 
   test-single
   {:doc "Run a single test by name (usage: bb test-single test-get-api-key)"
    :task (let [test-name (first *command-line-args*)]
            (if test-name
-             (clojure "-M" "-e" (format "(require 'clojure.test) (require 'jina.core-test) (clojure.test/test-var #'jina.core-test/%s)" test-name))
+             (do
+               (require 'clojure.test)
+               (require 'jina.core-test)
+               (if-let [test-var (ns-resolve 'jina.core-test (symbol test-name))]
+                 (clojure.test/test-var test-var)
+                 (println (str "Test not found: " test-name))))
              (println "Usage: bb test-single <test-name>\nExample: bb test-single test-get-api-key")))}
   
   kaocha
   {:doc "Run tests with Kaocha"
-   :task (shell "clojure -M -m kaocha.runner")}
+   :task (clojure "-M:test")}
   
   repl
   {:doc "Start a REPL"
