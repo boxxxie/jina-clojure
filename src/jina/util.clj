@@ -1,5 +1,5 @@
 (ns jina.util
-  (:require [clj-http.client :as client]
+  (:require [babashka.http-client :as http]
             [cheshire.core :as json]))
 
 (def ^:private jina-api-base-url "https://api.jina.ai/v1")
@@ -18,12 +18,12 @@
   (let [api-key (get-api-key)
         url (str jina-api-base-url endpoint)]
     (try
-      (-> (client/post url
-                       {:headers {"Authorization" (str "Bearer " api-key)
-                                  "Content-Type" "application/json"}
-                        :body (json/generate-string body)
-                        :as :json})
-          :body)
+      (-> (http/post url
+                     {:headers {"Authorization" (str "Bearer " api-key)
+                                "Content-Type" "application/json"}
+                      :body (json/generate-string body)})
+          :body
+          (json/parse-string true))
       (catch Exception e
         (println "Error making Jina API request:" (.getMessage e))
         (throw e)))))
