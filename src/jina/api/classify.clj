@@ -5,52 +5,52 @@
 
 ;; jina-embeddings-v3 input example JSON
 {
- "model"  : "jina-embeddings-v3",
- "input"  : [
-             "Calculate the compound interest on a principal of $10,000 invested for 5 years at an annual rate of 5%, compounded quarterly.",
-             "分析使用CRISPR基因编辑技术在人类胚胎中的伦理影响。考虑潜在的医疗益处和长期社会后果。",
-             "AIが自意識を持つディストピアの未来を舞台にした短編小説を書いてください。人間とAIの関係や意識の本質をテーマに探求してください。",
-             "Erklären Sie die Unterschiede zwischen Merge-Sort und Quicksort-Algorithmen in Bezug auf Zeitkomplexität, Platzkomplexität und Leistung in der Praxis.",
-             "Write a poem about the beauty of nature and its healing power on the human soul.",
-             "Translate the following sentence into French: The quick brown fox jumps over the lazy dog."
-             ],
- "labels" : [
-             "Simple task",
-             "Complex reasoning",
-             "Creative writing"
-             ]
- }
+  "model": "jina-embeddings-v3",
+  "input": [
+    "Calculate the compound interest on a principal of $10,000 invested for 5 years at an annual rate of 5%, compounded quarterly.",
+    "分析使用CRISPR基因编辑技术在人类胚胎中的伦理影响。考虑潜在的医疗益处和长期社会后果。",
+    "AIが自意識を持つディストピアの未来を舞台にした短編小説を書いてください。人間とAIの関係や意識の本質をテーマに探求してください。",
+    "Erklären Sie die Unterschiede zwischen Merge-Sort und Quicksort-Algorithmen in Bezug auf Zeitkomplexität, Platzkomplexität und Leistung in der Praxis.",
+    "Write a poem about the beauty of nature and its healing power on the human soul.",
+    "Translate the following sentence into French: The quick brown fox jumps over the lazy dog."
+  ],
+  "labels": [
+    "Simple task",
+    "Complex reasoning",
+    "Creative writing"
+  ]
+}
 
 ;; jina-clip-v2 input example JSON
 {
- "model"  : "jina-clip-v2",
- "input"  : [
-             {
-              "text" : "A sleek smartphone with a high-resolution display and multiple camera lenses"
-              },
-             {
-              "text" : "Fresh sushi rolls served on a wooden board with wasabi and ginger"
-              },
-             {
-              "image" : "https://picsum.photos/id/11/367/267"
-              },
-             {
-              "image" : "https://picsum.photos/id/22/367/267"
-              },
-             {
-              "text" : "Vibrant autumn leaves in a dense forest with sunlight filtering through"
-              },
-             {
-              "image" : "https://picsum.photos/id/8/367/267"
-              }
-             ],
- "labels" : [
-             "Technology and Gadgets",
-             "Food and Dining",
-             "Nature and Outdoors",
-             "Urban and Architecture"
-             ]
- }
+  "model": "jina-clip-v2",
+  "input": [
+    {
+      "text": "A sleek smartphone with a high-resolution display and multiple camera lenses"
+    },
+    {
+      "text": "Fresh sushi rolls served on a wooden board with wasabi and ginger"
+    },
+    {
+      "image": "https://picsum.photos/id/11/367/267"
+    },
+    {
+      "image": "https://picsum.photos/id/22/367/267"
+    },
+    {
+      "text": "Vibrant autumn leaves in a dense forest with sunlight filtering through"
+    },
+    {
+      "image": "https://picsum.photos/id/8/367/267"
+    }
+  ],
+  "labels": [
+    "Technology and Gadgets",
+    "Food and Dining",
+    "Nature and Outdoors",
+    "Urban and Architecture"
+  ]
+}
 
 (defn- validate-input
   "Validates input format based on the model being used."
