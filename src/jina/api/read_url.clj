@@ -1,7 +1,7 @@
 (ns jina.api.read-url
   (:require [jina.util :refer [jina-api-request]]))
 
-(defn jina-read-url
+(defn call
   "Retrieve/parse content from a URL using Jina AI Reader API.
 
   Input:

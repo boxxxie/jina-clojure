@@ -1,7 +1,7 @@
 (ns jina.api.segment-text
   (:require [jina.util :refer [jina-api-request]]))
 
-(defn jina-segment-text
+(defn call
   "Tokenizes text and divides text into chunks using Jina AI Segmenter API.
 
   Input:

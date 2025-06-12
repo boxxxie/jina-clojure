@@ -1,7 +1,7 @@
 (ns jina.api.search-web
   (:require [jina.util :refer [jina-api-request]]))
 
-(defn jina-search-web
+(defn call
   "Search the web for information using Jina AI Search API.
 
   Input:

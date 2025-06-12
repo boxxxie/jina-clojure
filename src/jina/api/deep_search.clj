@@ -1,7 +1,7 @@
 (ns jina.api.deep-search
   (:require [jina.util :refer [jina-api-request]]))
 
-(defn jina-deep-search
+(defn call
   "Combines web searching, reading, and reasoning for comprehensive investigation using Jina AI DeepSearch API.
 
   Input:

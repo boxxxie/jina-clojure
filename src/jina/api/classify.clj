@@ -1,7 +1,7 @@
 (ns jina.api.classify
   (:require [jina.util :refer [jina-api-request]]))
 
-(defn jina-classify
+(defn call
   "Zero-shot classification for text or images using Jina AI Classifier API.
 
   Input:

@@ -1,7 +1,7 @@
 (ns jina.api.rerank
   (:require [jina.util :refer [jina-api-request]]))
 
-(defn jina-rerank
+(defn call
   "Re-rank search results using Jina AI Reranker API.
 
   Input:
