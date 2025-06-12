@@ -70,7 +70,8 @@
         search-url (str "https://s.jina.ai/" query)
         start-time (System/nanoTime)
         headers    (merge {"Authorization" (str "Bearer " api-key)
-                           "Accept" "application/json"}
+                           "Accept" "application/json"
+                           "X-Respond-With" "no-content"}
                           opts)]
     (try
       (let [response    (http/get search-url
