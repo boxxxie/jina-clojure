@@ -17,3 +17,6 @@
   [input & opts]
   (let [body (merge {:input input} (first opts))]
     (jina-api-request "/embeddings" body)))
+
+
+#_(jina-embeddings ["Hello, world!"])
