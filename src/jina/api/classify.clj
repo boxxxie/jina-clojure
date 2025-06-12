@@ -31,8 +31,8 @@
 (defn- validate-input
   "Validates input format based on the model being used."
   [input model]
-  (let [has-text?  (some #(contains? % "text") input)
-        has-image? (some #(contains? % "image") input)]
+  (let [has-text?  (some #(or (contains? % "text") (contains? % :text)) input)
+        has-image? (some #(or (contains? % "image") (contains? % :image)) input)]
     (cond
       (and has-text? has-image?)
       (throw (ex-info "Cannot mix text and image objects in the same request"
