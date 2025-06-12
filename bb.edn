@@ -1,6 +1,7 @@
 {:min-bb-version "1.0.0"
  :deps {org.clojure/data.json {:mvn/version "2.4.0"}
-        clj-http/clj-http {:mvn/version "3.12.3"}}
+        clj-http/clj-http {:mvn/version "3.12.3"}
+        lambdaisland/kaocha {:mvn/version "1.87.1366"}}
  :paths ["src"]
  :tasks
  {:requires ([clojure.test :as t]
@@ -13,6 +14,10 @@
            (let [result (t/run-tests 'jina.core-test)]
              (when (pos? (+ (:fail result) (:error result)))
                (System/exit 1))))}
+  
+  kaocha
+  {:doc "Run tests with Kaocha"
+   :task (clojure "-M" "-m" "kaocha.runner")}
   
   repl
   {:doc "Start a REPL"
