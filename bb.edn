@@ -18,6 +18,35 @@
                              (:error result)))
              (when (pos? (+ (:fail result) (:error result)))
                (System/exit 1))))}
+
+  test-single
+  {:doc "Run a single test by name (usage: bb test-single test-get-api-key)"
+   :task (let [test-name (first *command-line-args*)]
+           (if test-name
+             (do
+               (println (str "Running single test: " test-name))
+               (require 'jina.core-test)
+               (let [test-var (ns-resolve 'jina.core-test (symbol test-name))]
+                 (if test-var
+                   (let [result (t/test-var test-var)]
+                     (println (format "Ran 1 test. %d failures, %d errors."
+                                     (:fail result 0)
+                                     (:error result 0)))
+                     (when (pos? (+ (:fail result 0) (:error result 0)))
+                       (System/exit 1)))
+                   (do
+                     (println (str "Test not found: " test-name))
+                     (System/exit 1)))))
+             (do
+               (println "Usage: bb test-single <test-name>")
+               (println "Available tests:")
+               (require 'jina.core-test)
+               (doseq [test-name (->> (ns-publics 'jina.core-test)
+                                     (filter #(re-find #"^test-" (str (key %))))
+                                     (map key)
+                                     sort)]
+                 (println (str "  " test-name)))
+               (System/exit 1))))}
   
   kaocha
   {:doc "Run tests with Kaocha"
