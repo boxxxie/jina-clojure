@@ -33,7 +33,7 @@
 
 (defn search-page
   "Search a specific page of results.
-  
+
   Input:
   - `q`: The search query string.
   - `page`: The page number (0-based).
@@ -44,28 +44,28 @@
 
 (defn search-pages
   "Search multiple pages and return a lazy sequence of results.
-  
+
   Input:
   - `q`: The search query string.
   - `start-page`: Starting page number (0-based, default: 0).
   - `max-pages`: Maximum number of pages to fetch (default: 5).
   - `opts`: Optional map of additional parameters (same as `call` function).
-  
+
   Returns a lazy sequence where each element is a page of search results."
   [q & {:keys [start-page max-pages] :or {start-page 0 max-pages 5} :as opts}]
   (let [search-opts (dissoc opts :start-page :max-pages)]
-    (map #(search-page q % search-opts) 
+    (map #(search-page q % search-opts)
          (range start-page (+ start-page max-pages)))))
 
 (defn search-all-results
   "Search multiple pages and return all results flattened into a single sequence.
-  
+
   Input:
   - `q`: The search query string.
   - `start-page`: Starting page number (0-based, default: 0).
   - `max-pages`: Maximum number of pages to fetch (default: 5).
   - `opts`: Optional map of additional parameters (same as `call` function).
-  
+
   Returns a lazy sequence of individual search result items from all pages."
   [q & {:keys [start-page max-pages] :or {start-page 0 max-pages 5} :as opts}]
   (let [search-opts (dissoc opts :start-page :max-pages)]
@@ -74,12 +74,12 @@
 
 (defn search-until
   "Search pages until a condition is met or no more results are found.
-  
+
   Input:
   - `q`: The search query string.
   - `pred`: A predicate function that takes a page response and returns true to stop.
   - `opts`: Optional map of additional parameters (same as `call` function).
-  
+
   Returns a lazy sequence of page responses until the predicate returns true."
   [q pred & opts]
   (let [search-opts (first opts)]
