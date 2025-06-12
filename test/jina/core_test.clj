@@ -13,9 +13,11 @@
     (let [existing-key (System/getenv "JINA_API_KEY")]
       (when-not existing-key
         (System/setProperty "JINA_API_KEY" "dummy-api-key"))
-      (f)
-      (when-not existing-key
-        (System/clearProperty "JINA_API_KEY")))))
+      (try
+        (f)
+        (finally
+          (when-not existing-key
+            (System/clearProperty "JINA_API_KEY")))))))
 
 (deftest test-get-api-key
   (testing "get-api-key retrieves from environment variable"
