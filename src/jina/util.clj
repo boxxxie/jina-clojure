@@ -45,7 +45,8 @@
   (let [api-key    (get-api-key)
         reader-url (str "https://r.jina.ai/" url)
         start-time (System/nanoTime)
-        headers    (merge {"Authorization" (str "Bearer " api-key)}
+        headers    (merge {"Authorization" (str "Bearer " api-key)
+                           "Accept" "application/json"}
                           opts)]
     (try
       (let [response    (http/get reader-url
@@ -54,8 +55,8 @@
             end-time    (System/nanoTime)
             duration-ms (/ (- end-time start-time) 1000000.0)]
         (if (< (:status response) 400)
-          {:content (:body response)
-           :execution_time_ms duration-ms}
+          (let [parsed-response (json/decode (:body response) keyword)]
+            (assoc parsed-response :execution_time_ms duration-ms))
           (throw (ex-info (str "HTTP " (:status response) ": " (:body response))
                           {:status (:status response) :body (:body response)}))))
       (catch Exception e
