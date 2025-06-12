@@ -153,3 +153,65 @@
 
 ;; Search with additional options
 #_(search-pages "AI research" :start-page 1 :max-pages 2 :num 5 :hl "en")
+
+(defn aggregate-search-results
+  "Aggregates multiple search result pages into a single consolidated structure.
+  
+  Numerical fields (like tokens, execution_time_ms) are summed.
+  List fields (like :data) are concatenated.
+  Other fields use the value from the first non-nil result.
+  
+  Input:
+  - `results`: A sequence of search result maps from pagination functions.
+  
+  Returns a single aggregated result map."
+  [results]
+  (when (seq results)
+    (let [non-empty-results (filter some? results)]
+      (if (empty? non-empty-results)
+        nil
+        (reduce
+          (fn [acc result]
+            (merge-with
+              (fn [v1 v2]
+                (cond
+                  ;; Sum numerical values
+                  (and (number? v1) (number? v2)) (+ v1 v2)
+                  ;; Concatenate sequences/vectors
+                  (and (sequential? v1) (sequential? v2)) (concat v1 v2)
+                  ;; For maps, recursively merge
+                  (and (map? v1) (map? v2)) (merge-with
+                                              (fn [nested-v1 nested-v2]
+                                                (if (and (number? nested-v1) (number? nested-v2))
+                                                  (+ nested-v1 nested-v2)
+                                                  (or nested-v2 nested-v1)))
+                                              v1 v2)
+                  ;; Use second value if first is nil, otherwise keep first
+                  :else (or v1 v2)))
+              acc
+              result))
+          (first non-empty-results)
+          (rest non-empty-results))))))
+
+(defn search-pages-aggregated
+  "Search multiple pages and return aggregated results.
+  
+  Input:
+  - `q`: The search query string.
+  - `start-page`: Starting page number (0-based, default: 0).
+  - `max-pages`: Maximum number of pages to fetch (default: 5).
+  - `opts`: Optional map of additional parameters (same as `call` function).
+  
+  Returns a single aggregated result map with combined data from all pages."
+  [q & {:keys [start-page max-pages] :or {start-page 0 max-pages 5} :as opts}]
+  (let [search-opts (dissoc opts :start-page :max-pages)
+        pages (search-pages q :start-page start-page :max-pages max-pages)]
+    (aggregate-search-results pages)))
+
+;; Aggregation examples:
+
+#_(aggregate-search-results 
+   [(search-page "AI research" 0)
+    (search-page "AI research" 1)])
+
+#_(search-pages-aggregated "AI research" :max-pages 3)
