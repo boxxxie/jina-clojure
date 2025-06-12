@@ -52,18 +52,56 @@
              ]
  }
 
+(defn- validate-input
+  "Validates input format based on the model being used."
+  [input model]
+  (let [has-text? (some #(contains? % "text") input)
+        has-image? (some #(contains? % "image") input)]
+    (cond
+      (and has-text? has-image?)
+      (throw (ex-info "Cannot mix text and image objects in the same request" 
+                      {:input input :model model}))
+      
+      (and (= model "jina-clip-v2") (not has-image?))
+      (throw (ex-info "jina-clip-v2 model requires image inputs" 
+                      {:input input :model model}))
+      
+      (and (= model "jina-embeddings-v3") has-image?)
+      (throw (ex-info "jina-embeddings-v3 model does not support image inputs" 
+                      {:input input :model model}))
+      
+      :else true)))
+
 (defn call
   "Zero-shot classification for text or images using Jina AI Classifier API.
 
+  Model-specific input requirements:
+  - `jina-embeddings-v3` (default): For text classification only
+    - Input format: Vector of strings or text objects with \"text\" key
+    - Example: [\"I love this product!\"] or [{\"text\" \"I love this product!\"}]
+  
+  - `jina-clip-v2`: For image classification (can also handle text)
+    - Input format: Vector of objects with \"image\" or \"text\" keys
+    - Image format: Base64 encoded string or URL
+    - Example: [{\"image\" \"data:image/jpeg;base64,...\"}] or [{\"text\" \"A red car\"}]
+    - Note: Cannot mix text and image objects in the same request
+
   Input:
-  - `input`: Array of inputs for classification. Each entry can either be a text object `{\"text\": \"your_text_here\"}` or an image object `{\"image\": \"base64_image_string\"}`. You cannot mix text and image objects in the same request.
+  - `input`: Array of inputs for classification. Format depends on model:
+    - For jina-embeddings-v3: Vector of strings or text objects
+    - For jina-clip-v2: Vector of image/text objects (cannot mix types)
   - `labels`: List of labels used for classification.
   - `opts`: An optional map of additional parameters:
-    - `:model` (string, enum: \"jina-clip-v2\", \"jina-embeddings-v3\"): Identifier of the model to use (jina-clip-v2 for images, jina-embeddings-v3 for text).
+    - `:model` (string, default: \"jina-embeddings-v3\", enum: \"jina-clip-v2\", \"jina-embeddings-v3\"): 
+      Identifier of the model to use. jina-embeddings-v3 for text, jina-clip-v2 for images.
     - `:classifier_id` (string): The identifier of the classifier. If not provided, a new classifier will be created."
   [input labels & opts]
-  (let [body (merge {:input input :labels labels} (first opts))]
-    (jina-api-request "/classify" body)))
+  (let [default-opts {:model "jina-embeddings-v3"}
+        merged-opts (merge default-opts (first opts))
+        model (:model merged-opts)]
+    (validate-input input model)
+    (let [body (merge {:input input :labels labels} merged-opts)]
+      (jina-api-request "/classify" body))))
 
 
 #_(call [{"text" "I love this new smartphone! The camera quality is amazing."}
