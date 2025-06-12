@@ -125,3 +125,34 @@
       (is (thrown? Exception (jina/jina-read-url nil)))
       (is (thrown? Exception (jina/jina-search-web nil)))
       (is (thrown? Exception (jina/jina-segment-text nil))))))
+
+;; Test API key validation
+(deftest test-api-key-validation
+  (when (System/getenv "JINA_API_KEY")
+    (testing "API key is valid and can make successful requests"
+      (try
+        (let [response (jina/jina-embeddings ["test"])]
+          (is (map? response))
+          (is (contains? response :data))
+          (is (sequential? (:data response))))
+        (catch Exception e
+          (is false (str "API key validation failed: " (.getMessage e))))))
+    
+    (testing "API key format is reasonable"
+      (let [api-key (System/getenv "JINA_API_KEY")]
+        (is (string? api-key))
+        (is (not (empty? api-key)))
+        (is (> (count api-key) 10) "API key should be longer than 10 characters")))))
+
+;; Test with invalid API key
+(deftest test-invalid-api-key
+  (testing "Invalid API key returns appropriate error"
+    (with-redefs [System/getenv (fn [k] (if (= k "JINA_API_KEY") "invalid-key-123" nil))]
+      (try
+        (jina/jina-embeddings ["test"])
+        (is false "Should have thrown an exception with invalid API key")
+        (catch Exception e
+          (is (or (re-find #"401" (.getMessage e))
+                  (re-find #"unauthorized" (clojure.string/lower-case (.getMessage e)))
+                  (re-find #"invalid" (clojure.string/lower-case (.getMessage e))))
+              "Should get an authentication error"))))))
