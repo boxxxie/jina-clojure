@@ -18,7 +18,7 @@
   
   kaocha
   {:doc "Run tests with Kaocha"
-   :task (clojure "-M" "-m" "kaocha.runner")}
+   :task (shell "clojure -M -m kaocha.runner")}
   
   repl
   {:doc "Start a REPL"
