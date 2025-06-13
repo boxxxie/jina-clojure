@@ -17,13 +17,23 @@ This documentation covers the Clojure client library for Jina AI APIs.
 All API functions follow a similar pattern:
 
 ```clojure
-(require '[jina.api.embeddings :as embeddings])
+(require '[jina.core :as jina])
 
 ;; Basic usage
-(embeddings/call ["Hello, world!"])
+(jina/embeddings ["Hello, world!"])
 
 ;; With options
-(embeddings/call ["Hello, world!"] {:dimensions 512})
+(jina/embeddings ["Hello, world!"] {:dimensions 512})
+
+
+;; main API functions
+jina/embeddings  
+jina/rerank      
+jina/classify    
+jina/deep-search  
+jina/read-url     
+jina/search-web   
+jina/segment-text 
 ```
 
 ## Common Parameters
