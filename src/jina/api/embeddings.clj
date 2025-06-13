@@ -1,7 +1,7 @@
 (ns jina.api.embeddings
   (:require [jina.util :refer [jina-api-request]]))
 
-(defn embeddings
+(defn call
   "Converts text/images to fixed-length vectors using Jina AI Embeddings API.
 
   Input:
@@ -16,11 +16,11 @@
     - `:truncate` (boolean, default: false): If true, the model will automatically drop the tail that extends beyond the maximum context length allowed by the model instead of throwing an error."
   [input & opts]
   (let [default-opts {:model "jina-embeddings-v3"}
-        body (merge {:input input} default-opts (first opts))]
+        body         (merge {:input input} default-opts (first opts))]
     (jina-api-request "/embeddings" body)))
 
 
-#_(embeddings ["Hello, world!"])
+#_(call ["Hello, world!"])
 
 ;; output
 #_{
@@ -35,17 +35,34 @@
    }
 
 
-#_(embeddings ["Hello, world!" "there is no spoon"] {:dimensions 10})
+#_(call ["Hello, world!" "there is no spoon"] {:dimensions 10})
 
 ;; output
-#_{:model  "jina-embeddings-v3",
-   :object "list",
-   :usage  {:total_tokens  13,
-            :prompt_tokens 13},
-   :data   [
-            {:object    "embedding",
-             :index     0,
-             :embedding [0.39906722 -0.38789722 0.45774525 0.06643874 0.27025834 -0.39918035 -0.1370097 0.41541225 -0.062082075 -0.22081324]}
-            {:object    "embedding",
-             :index     1,
-             :embedding [0.22698139 -0.17781383 0.41603658 -0.08164376 0.3316518 -0.08299294 -0.22000621 0.70784235 0.13058735 0.23180217]}]}
+#_{:model             "jina-embeddings-v3",
+   :object            "list",
+   :usage             {:total_tokens 13, :prompt_tokens 13},
+   :data              [{:object    "embedding",
+                        :index     0,
+                        :embedding [0.39906722
+                                    -0.38789722
+                                    0.45774525
+                                    0.06643874
+                                    0.27025834
+                                    -0.39918035
+                                    -0.1370097
+                                    0.41541225
+                                    -0.062082075
+                                    -0.22081324]}
+                       {:object    "embedding",
+                        :index     1,
+                        :embedding [0.22698139
+                                    -0.17781383
+                                    0.41603658
+                                    -0.08164376
+                                    0.3316518
+                                    -0.08299294
+                                    -0.22000621
+                                    0.70784235
+                                    0.13058735
+                                    0.23180217]}],
+   :execution_time_ms 1382.003666}

@@ -6,9 +6,7 @@
 
 (defn get-api-key []
   (if-let [api-key (System/getenv "JINA_API_KEY")]
-    (do
-      (println "JINA_API_KEY found.")
-      api-key)
+    api-key
     (do
       (println "JINA_API_KEY not found. Please set the JINA_API_KEY environment variable.")
       (throw (ex-info "JINA_API_KEY environment variable not set." {:error :api-key-missing})))))

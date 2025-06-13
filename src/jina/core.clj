@@ -11,11 +11,13 @@
 ;; Utility functions
 (def get-api-key util/get-api-key)
 
+(def api-key (get-api-key))
+
 ;; API functions
-(def jina-embeddings embeddings/jina-embeddings)
-(def jina-rerank rerank/jina-rerank)
-(def jina-classify classify/jina-classify)
-(def jina-deep-search deep-search/jina-deep-search)
-(def jina-read-url read-url/jina-read-url)
-(def jina-search-web search-web/jina-search-web)
-(def jina-segment-text segment-text/jina-segment-text)
+(def embeddings   embeddings/call)
+(def rerank       rerank/call)
+(def classify     classify/call)
+(def deep-search  deep-search/call)
+(def read-url     read-url/call)
+(def search-web   search-web/call)
+(def segment-text segment-text/call)

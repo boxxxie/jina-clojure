@@ -49,20 +49,22 @@
   [model input]
   (case model
     "jina-embeddings-v3"
-    (when-not (m/validate jina-embeddings-v3-input-schema input)
-      (let [explanation (m/explain jina-embeddings-v3-input-schema input)
-            errors (me/humanize explanation)]
-        (mp/explain explanation)
-        (throw (ex-info "jina-embeddings-v3 model requires input to be an array of strings only"
-                        {:input input :model model :errors errors}))))
+    (let [schema jina-embeddings-v3-input-schema]
+      (when-not (m/validate schema input)
+        (let [explanation (m/explain schema input)
+              errors      (me/humanize explanation)]
+          (mp/explain schema explanation)
+          (throw (ex-info "jina-embeddings-v3 model requires input to be an array of strings only"
+                          {:input input :model model :errors errors})))))
 
     "jina-clip-v2"
-    (when-not (m/validate jina-clip-v2-input-schema input)
-      (let [explanation (m/explain jina-clip-v2-input-schema input)
-            errors (me/humanize explanation)]
-        (mp/explain explanation)
-        (throw (ex-info "jina-clip-v2 model requires input to be a vector of objects with either 'text' or 'image' keys"
-                        {:input input :model model :errors errors}))))
+    (let [schema jina-clip-v2-input-schema]
+      (when-not (m/validate schema input)
+        (let [explanation (m/explain schema input)
+              errors      (me/humanize explanation)]
+          (mp/explain schema explanation)
+          (throw (ex-info "jina-clip-v2 model requires input to be a vector of objects with either 'text' or 'image' keys"
+                          {:input input :model model :errors errors})))))
 
     true))
 
@@ -97,44 +99,124 @@
     - `:model` (string, default: \"jina-embeddings-v3\", enum: \"jina-clip-v2\", \"jina-embeddings-v3\"):
       Identifier of the model to use. jina-embeddings-v3 for text, jina-clip-v2 for images.
     - `:classifier_id` (string): The identifier of the classifier. If not provided, a new classifier will be created."
-  [{:keys [input labels]} & opts]
-  (let [default-opts {:model "jina-embeddings-v3"}
-        merged-opts  (merge default-opts (first opts))
-        model        (:model merged-opts)]
-    (validate-input input model)
-    (let [body (merge {:input input :labels labels} merged-opts)]
-      (jina-api-request "/classify") body)))
+  [{:keys [model input labels] :as params} & opts]
+  (let [opts  (first opts)
+        model (or model (:model opts) "jina-embeddings-v3")
+        body  (-> (merge params opts)
+                  (assoc :model model))]
+    (validate-input model input)
+    (jina-api-request "/classify" body)))
 
+#_(call example-jina-embeddings-v3)
 
-#_(call
-    ["I love this new smartphone! The camera quality is amazing."
-     "The delivery was delayed and the package was damaged."]
-    ["positive" "negative" "neutral"])
+{:usage             {:total_tokens 196},
+ :data
+ [{:object     "classification",
+   :index      0,
+   :prediction "Simple task",
+   :score      0.35217395424842834,
+   :predictions
+   [{:label "Simple task", :score 0.35217395424842834}
+    {:label "Complex reasoning", :score 0.34130600094795227}
+    {:label "Creative writing", :score 0.30652010440826416}]}
+  {:object     "classification",
+   :index      1,
+   :prediction "Complex reasoning",
+   :score      0.3431348502635956,
+   :predictions
+   [{:label "Simple task", :score 0.3242877125740051}
+    {:label "Complex reasoning", :score 0.3431348502635956}
+    {:label "Creative writing", :score 0.3325774073600769}]}
+  {:object     "classification",
+   :index      2,
+   :prediction "Creative writing",
+   :score      0.34869447350502014,
+   :predictions
+   [{:label "Simple task", :score 0.3321252465248108}
+    {:label "Complex reasoning", :score 0.31918027997016907}
+    {:label "Creative writing", :score 0.34869447350502014}]}
+  {:object     "classification",
+   :index      3,
+   :prediction "Complex reasoning",
+   :score      0.35215625166893005,
+   :predictions
+   [{:label "Simple task", :score 0.34568116068840027}
+    {:label "Complex reasoning", :score 0.35215625166893005}
+    {:label "Creative writing", :score 0.3021625876426697}]}
+  {:object     "classification",
+   :index      4,
+   :prediction "Creative writing",
+   :score      0.3638777732849121,
+   :predictions
+   [{:label "Simple task", :score 0.3311176300048828}
+    {:label "Complex reasoning", :score 0.30500465631484985}
+    {:label "Creative writing", :score 0.3638777732849121}]}
+  {:object     "classification",
+   :index      5,
+   :prediction "Simple task",
+   :score      0.3561651110649109,
+   :predictions
+   [{:label "Simple task", :score 0.3561651110649109}
+    {:label "Complex reasoning", :score 0.326008677482605}
+    {:label "Creative writing", :score 0.31782621145248413}]}],
+ :execution_time_ms 592.978605}
 
-;; output
-#_{:usage {:total_tokens 38}, :data [{:object "classification", :index 0, :prediction "positive", :score 0.3556700050830841, :predictions [{:label "positive", :score 0.3556700050830841} {:label "negative", :score 0.3169832229614258} {:label "neutral", :score 0.3273467719554901}]} {:object "classification", :index 1, :prediction "negative", :score 0.3376658260822296, :predictions [{:label "positive", :score 0.32943376898765564} {:label "negative", :score 0.3376658260822296} {:label "neutral", :score 0.33290040493011475}]}]}
+#_(call example-jina-clip-v2)
 
-;; output
-#_{:data [{:index      0,
-           :input      {"text" "I love this new smartphone! The camera quality is amazing."},
-           :prediction [{:label "positive", :score 0.92}
-                        {:label "neutral", :score 0.06}
-                        {:label "negative", :score 0.02}]}
-          {:index      1,
-           :input      {"text" "The delivery was delayed and the package was damaged."},
-           :prediction [{:label "negative", :score 0.89}
-                        {:label "neutral", :score 0.08}
-                        {:label "positive", :score 0.03}]}]}
-
-
-#_(call [{"image" "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQ..."}]
-        ["cat" "dog" "bird" "car"]
-        {:model "jina-clip-v2"})
-
-;; output for image classification
-#_{:data [{:index      0,
-           :input      {"image" "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQ..."},
-           :prediction [{:label "cat", :score 0.87}
-                        {:label "dog", :score 0.09}
-                        {:label "bird", :score 0.03}
-                        {:label "car", :score 0.01}]}]}
+{:usage             {:total_tokens 12083},
+ :data
+ [{:object     "classification",
+   :index      0,
+   :prediction "Technology and Gadgets",
+   :score      0.2847042977809906,
+   :predictions
+   [{:label "Technology and Gadgets", :score 0.2847042977809906}
+    {:label "Food and Dining", :score 0.2256934940814972}
+    {:label "Nature and Outdoors", :score 0.2463572919368744}
+    {:label "Urban and Architecture", :score 0.2432449609041214}]}
+  {:object     "classification",
+   :index      1,
+   :prediction "Food and Dining",
+   :score      0.2799667716026306,
+   :predictions
+   [{:label "Technology and Gadgets", :score 0.24433106184005737}
+    {:label "Food and Dining", :score 0.2799667716026306}
+    {:label "Nature and Outdoors", :score 0.2470456063747406}
+    {:label "Urban and Architecture", :score 0.22865663468837738}]}
+  {:object     "classification",
+   :index      2,
+   :prediction "Nature and Outdoors",
+   :score      0.2784387171268463,
+   :predictions
+   [{:label "Technology and Gadgets", :score 0.2343646138906479}
+    {:label "Food and Dining", :score 0.23988774418830872}
+    {:label "Nature and Outdoors", :score 0.2784387171268463}
+    {:label "Urban and Architecture", :score 0.2473088949918747}]}
+  {:object     "classification",
+   :index      3,
+   :prediction "Urban and Architecture",
+   :score      0.2572559416294098,
+   :predictions
+   [{:label "Technology and Gadgets", :score 0.24453730881214142}
+    {:label "Food and Dining", :score 0.24202071130275726}
+    {:label "Nature and Outdoors", :score 0.25618600845336914}
+    {:label "Urban and Architecture", :score 0.2572559416294098}]}
+  {:object     "classification",
+   :index      4,
+   :prediction "Nature and Outdoors",
+   :score      0.28963884711265564,
+   :predictions
+   [{:label "Technology and Gadgets", :score 0.2364688664674759}
+    {:label "Food and Dining", :score 0.23615625500679016}
+    {:label "Nature and Outdoors", :score 0.28963884711265564}
+    {:label "Urban and Architecture", :score 0.2377360463142395}]}
+  {:object     "classification",
+   :index      5,
+   :prediction "Technology and Gadgets",
+   :score      0.27144649624824524,
+   :predictions
+   [{:label "Technology and Gadgets", :score 0.27144649624824524}
+    {:label "Food and Dining", :score 0.2500467598438263}
+    {:label "Nature and Outdoors", :score 0.24524091184139252}
+    {:label "Urban and Architecture", :score 0.23326583206653595}]}],
+ :execution_time_ms 1581.228393}

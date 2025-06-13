@@ -20,22 +20,42 @@
 
 #_(call "This is a sample text that will be tokenized and segmented into meaningful chunks for processing.")
 
-;; output
-#_{:num_tokens 18,
-   :tokens ["This", "is", "a", "sample", "text", "that", "will", "be", "tokenized", "and", "segmented", "into", "meaningful", "chunks", "for", "processing", ".", ""]}
+;;output
+{:num_tokens 18, :tokenizer "cl100k_base", :usage {:tokens 0}, :execution_time_ms 713.939601}
 
 
 #_(call "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
-        {:return_chunks true
+        {:return_chunks    true
          :max_chunk_length 50
-         :return_tokens true})
+         :return_tokens    true})
 
 ;; output with chunks and tokens
-#_{:num_tokens 23,
-   :tokens ["Lorem", "ipsum", "dolor", "sit", "amet", ",", "consectetur", "adipiscing", "elit", ".", "Sed", "do", "eiusmod", "tempor", "incididunt", "ut", "labore", "et", "dolore", "magna", "aliqua", ".", ""],
-   :chunks [{:text "Lorem ipsum dolor sit amet, consectetur adipiscing",
-             :start_index 0,
-             :end_index 49}
-            {:text "elit. Sed do eiusmod tempor incididunt ut labore",
-             :start_index 50,
-             :end_index 96}]}
+{:num_tokens        22,
+ :tokenizer         "cl100k_base",
+ :usage             {:tokens 0},
+ :num_chunks        1,
+ :chunk_positions   [[0 123]],
+ :tokens            [[["Lorem" [33883]]
+                      [" ipsum" [27439]]
+                      [" dolor" [24578]]
+                      [" sit" [2503]]
+                      [" amet" [28311]]
+                      ["," [11]]
+                      [" consectetur" [36240]]
+                      [" adipiscing" [59024]]
+                      [" elit" [31160]]
+                      ["." [13]]
+                      [" Sed" [36378]]
+                      [" do" [656]]
+                      [" eiusmod" [80222]]
+                      [" tempor" [19502]]
+                      [" incididunt" [87504]]
+                      [" ut" [8791]]
+                      [" labore" [73304]]
+                      [" et" [1880]]
+                      [" dolore" [58396]]
+                      [" magna" [60017]]
+                      [" aliqua" [87027]]
+                      ["." [13]]]],
+ :chunks            ["Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."],
+ :execution_time_ms 593.676664}

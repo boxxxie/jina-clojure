@@ -24,32 +24,19 @@
          "Reinforcement learning trains agents through rewards"])
 
 ;; output
-#_{:model "jina-reranker-v2-base-multilingual",
-   :usage {:total_tokens 45},
-   :results [{:index 0,
-              :document {:text "Deep learning is a subset of machine learning"},
-              :relevance_score 0.95}
-             {:index 2,
-              :document {:text "Computer vision applies machine learning to images"},
-              :relevance_score 0.87}
-             {:index 3,
-              :document {:text "Reinforcement learning trains agents through rewards"},
-              :relevance_score 0.82}
-             {:index 1,
-              :document {:text "Natural language processing uses statistical methods"},
-              :relevance_score 0.71}]}
-
-
-#_(call "best restaurants in Tokyo"
-        ["Sushi Jiro is famous for its omakase experience"
-         "The weather in Tokyo is mild in spring"
-         "Ramen shops are popular throughout the city"
-         "Tokyo has many Michelin-starred establishments"]
-        {:top_n 2
-         :return_documents false})
-
-;; output with limited results and no document text
-#_{:model "jina-reranker-v2-base-multilingual",
-   :usage {:total_tokens 32},
-   :results [{:index 3, :relevance_score 0.92}
-             {:index 0, :relevance_score 0.88}]}
+{:model             "jina-reranker-v2-base-multilingual",
+ :usage             {:total_tokens 50},
+ :results
+ [{:index           0,
+   :document        {:text "Deep learning is a subset of machine learning"},
+   :relevance_score 0.23231014609336853}
+  {:index           2,
+   :document        {:text "Computer vision applies machine learning to images"},
+   :relevance_score 0.16026602685451508}
+  {:index           1,
+   :document        {:text "Natural language processing uses statistical methods"},
+   :relevance_score 0.09401018172502518}
+  {:index           3,
+   :document        {:text "Reinforcement learning trains agents through rewards"},
+   :relevance_score 0.08509904146194458}],
+ :execution_time_ms 1446.232782}
