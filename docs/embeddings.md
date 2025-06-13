@@ -53,22 +53,22 @@ Converts input to embeddings.
 
 **Response:**
 ```clojure
-{:model             "jina-embeddings-v3",
- :object            "list",
- :usage             {:total_tokens 13, :prompt_tokens 13},
- :data              [{:object    "embedding",
-                      :index     0,
-                      :embedding [0.39906722 -0.38789722 0.45774525 ...]}
-                     {:object    "embedding",
-                      :index     1,
-                      :embedding [0.22698139 -0.17781383 0.41603658 ...]}],
+{:model "jina-embeddings-v3",
+ :object "list",
+ :usage {:total_tokens 13, :prompt_tokens 13},
+ :data [{:object    "embedding",
+         :index     0,
+         :embedding [0.39906722 -0.38789722 0.45774525 ...]}
+        {:object    "embedding",
+         :index     1,
+         :embedding [0.22698139 -0.17781383 0.41603658 ...]}],
  :execution_time_ms 1382.003666}
 ```
 
 ### Advanced Options
 
 ```clojure
-(embeddings/call 
+(embeddings/call
   ["Document for retrieval" "Query text"]
   {:task "retrieval.passage"
    :normalized true

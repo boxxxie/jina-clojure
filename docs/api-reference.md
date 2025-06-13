@@ -21,15 +21,15 @@ Complete reference for all Jina AI APIs available in this Clojure client library
 
 ## API Overview
 
-| API | Purpose | Input | Output |
-|-----|---------|-------|--------|
-| [Embeddings](embeddings.md) | Convert text/images to vectors | Text/images | Numerical vectors |
-| [Rerank](rerank.md) | Re-order search results | Query + documents | Ranked results |
-| [Classify](classify.md) | Zero-shot classification | Text/images + labels | Classifications |
-| [Search Web](search-web.md) | Web search | Search query | Web results |
-| [Read URL](read-url.md) | Extract content from URLs | URL | Parsed content |
-| [Segment Text](segment-text.md) | Tokenize and chunk text | Text | Tokens/chunks |
-| [Deep Search](deep-search.md) | Research with reasoning | Conversation | Researched response |
+| API                             | Purpose                        | Input                | Output              |
+|---------------------------------|--------------------------------|----------------------|---------------------|
+| [Embeddings](embeddings.md)     | Convert text/images to vectors | Text/images          | Numerical vectors   |
+| [Rerank](rerank.md)             | Re-order search results        | Query + documents    | Ranked results      |
+| [Classify](classify.md)         | Zero-shot classification       | Text/images + labels | Classifications     |
+| [Search Web](search-web.md)     | Web search                     | Search query         | Web results         |
+| [Read URL](read-url.md)         | Extract content from URLs      | URL                  | Parsed content      |
+| [Segment Text](segment-text.md) | Tokenize and chunk text        | Text                 | Tokens/chunks       |
+| [Deep Search](deep-search.md)   | Research with reasoning        | Conversation         | Researched response |
 
 ## Common Patterns
 
@@ -95,7 +95,7 @@ Be mindful of API rate limits:
   (let [;; Get embeddings for query and documents
         query-emb (embeddings/call [query])
         doc-embs (embeddings/call documents)
-        
+
         ;; Rerank documents by relevance
         ranked (rerank/call query documents {:top_n 5})]
     ranked))
@@ -107,17 +107,17 @@ Be mindful of API rate limits:
 (defn analyze-url [url]
   (let [;; Extract content
         content (read-url/call url {:X-Return-Format "text"})
-        
+
         ;; Segment into chunks
-        segments (segment-text/call (:content (:data content)) 
+        segments (segment-text/call (:content (:data content))
                    {:return_chunks true :max_chunk_length 500})
-        
+
         ;; Classify each chunk
-        classifications (classify/call 
+        classifications (classify/call
                          {:input (:chunks segments)
                           :labels ["technical" "business" "general"]})]
     {:content content
-     :segments segments  
+     :segments segments
      :classifications classifications}))
 ```
 
@@ -127,9 +127,9 @@ Be mindful of API rate limits:
 (defn research-question [question]
   (let [;; First, do a web search
         search-results (search/call question {:num 10})
-        
+
         ;; Then use deep search for comprehensive analysis
-        analysis (deep-search/call 
+        analysis (deep-search/call
                    [{:role "user" :content question}]
                    {:reasoning_effort "high"
                     :max_returned_urls 5})]
@@ -151,15 +151,15 @@ Be mindful of API rate limits:
 
 ### Performance Characteristics
 
-| API | Speed | Token Usage | Use Case |
-|-----|-------|-------------|----------|
-| Embeddings | Fast | Low | Real-time similarity |
-| Rerank | Fast | Low | Search optimization |
-| Classify | Fast | Low | Content categorization |
-| Search Web | Medium | Medium | Information retrieval |
-| Read URL | Medium | Medium | Content extraction |
-| Segment Text | Fast | Very Low | Text preprocessing |
-| Deep Search | Slow | High | Complex research |
+| API          | Speed  | Token Usage | Use Case               |
+|--------------|--------|-------------|------------------------|
+| Embeddings   | Fast   | Low         | Real-time similarity   |
+| Rerank       | Fast   | Low         | Search optimization    |
+| Classify     | Fast   | Low         | Content categorization |
+| Search Web   | Medium | Medium      | Information retrieval  |
+| Read URL     | Medium | Medium      | Content extraction     |
+| Segment Text | Fast   | Very Low    | Text preprocessing     |
+| Deep Search  | Slow   | High        | Complex research       |
 
 ## Troubleshooting
 

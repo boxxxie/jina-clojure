@@ -23,7 +23,7 @@ Basic web search function.
 Search a specific page of results.
 
 **Parameters:**
-- `q` - The search query string  
+- `q` - The search query string
 - `page` - Page number (0-based)
 - `opts` - Optional map of search parameters
 
@@ -89,15 +89,15 @@ Search pages until a condition is met.
 
 **Response:**
 ```clojure
-{:code              200,
- :status            20000,
- :data              [{:title       "Artificial Intelligence - arXiv",
-                      :url         "https://arxiv.org/list/cs.AI/recent",
-                      :description "Subjects: Artificial Intelligence...",
-                      :usage       {:tokens 1000}}
-                     ;; ... more results
-                     ],
- :meta              {:usage {:tokens 10000}},
+{:code   200,
+ :status 20000,
+ :data   [{:title       "Artificial Intelligence - arXiv",
+           :url         "https://arxiv.org/list/cs.AI/recent",
+           :description "Subjects: Artificial Intelligence...",
+           :usage       {:tokens 1000}}
+          ;; ... more results
+          ],
+ :meta   {:usage {:tokens 10000}},
  :execution_time_ms 1722.374517}
 ```
 
@@ -128,7 +128,7 @@ Search pages until a condition is met.
 ### Advanced Search Options
 
 ```clojure
-(search/call "machine learning" 
+(search/call "machine learning"
   {:num 5
    :hl "en"
    :gl "US"
@@ -148,13 +148,13 @@ Search pages until a condition is met.
 The `aggregate-search-results` function combines multiple search pages:
 
 - **Numerical fields** (tokens, execution_time_ms) are summed
-- **List fields** (:data) are concatenated  
+- **List fields** (:data) are concatenated
 - **Status fields** (:code, :status) use first result value
 - **Other fields** use first non-nil value
 
 ```clojure
 ;; Manual aggregation
-(search/aggregate-search-results 
+(search/aggregate-search-results
   [(search/search-page "AI" 0)
    (search/search-page "AI" 1)])
 
@@ -166,7 +166,7 @@ The `aggregate-search-results` function combines multiple search pages:
 
 Search results contain:
 - `:code` - HTTP status code
-- `:status` - API status code  
+- `:status` - API status code
 - `:data` - Vector of search results with:
   - `:title` - Page title
   - `:url` - Page URL

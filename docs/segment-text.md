@@ -22,7 +22,7 @@ Tokenizes and segments text into meaningful chunks.
 
 - `:tokenizer` (string, default: "cl100k_base") - Tokenizer to use:
   - `"cl100k_base"` - GPT-3.5/GPT-4 tokenizer
-  - `"o200k_base"` - GPT-4o tokenizer  
+  - `"o200k_base"` - GPT-4o tokenizer
   - `"p50k_base"` - GPT-3 tokenizer
   - `"r50k_base"` - GPT-3 tokenizer variant
   - `"p50k_edit"` - GPT-3 edit tokenizer
@@ -43,16 +43,16 @@ Tokenizes and segments text into meaningful chunks.
 
 **Response:**
 ```clojure
-{:num_tokens 18, 
- :tokenizer "cl100k_base", 
- :usage {:tokens 0}, 
+{:num_tokens 18,
+ :tokenizer "cl100k_base",
+ :usage {:tokens 0},
  :execution_time_ms 713.939601}
 ```
 
 ### With Chunks and Tokens
 
 ```clojure
-(segment/call 
+(segment/call
   "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."
   {:return_chunks    true
    :max_chunk_length 50
@@ -61,17 +61,17 @@ Tokenizes and segments text into meaningful chunks.
 
 **Response:**
 ```clojure
-{:num_tokens        22,
- :tokenizer         "cl100k_base",
- :usage             {:tokens 0},
- :num_chunks        1,
- :chunk_positions   [[0 123]],
- :tokens            [[["Lorem" [33883]]
-                      [" ipsum" [27439]]
-                      [" dolor" [24578]]
-                      ;; ... more tokens
-                      ]],
- :chunks            ["Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."],
+{:num_tokens      22,
+ :tokenizer       "cl100k_base",
+ :usage           {:tokens 0},
+ :num_chunks      1,
+ :chunk_positions [[0 123]],
+ :tokens          [[["Lorem" [33883]]
+                    [" ipsum" [27439]]
+                    [" dolor" [24578]]
+                    ;; ... more tokens
+                    ]],
+ :chunks          ["Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua."],
  :execution_time_ms 593.676664}
 ```
 
@@ -81,7 +81,7 @@ Tokenizes and segments text into meaningful chunks.
 ;; GPT-4o tokenizer
 (segment/call "Hello, world!" {:tokenizer "o200k_base"})
 
-;; GPT-2 tokenizer  
+;; GPT-2 tokenizer
 (segment/call "Hello, world!" {:tokenizer "gpt2"})
 ```
 
@@ -89,7 +89,7 @@ Tokenizes and segments text into meaningful chunks.
 
 ```clojure
 ;; Get first 10 tokens
-(segment/call "Long text content here..." 
+(segment/call "Long text content here..."
   {:head 10 :return_tokens true})
 
 ;; Get last 5 tokens
@@ -130,7 +130,7 @@ The API returns a map with:
 ### With Tokens (`:return_tokens` true)
 - `:tokens` - Vector of token arrays, each containing [text, [token_id]]
 
-### With Chunks (`:return_chunks` true)  
+### With Chunks (`:return_chunks` true)
 - `:num_chunks` - Number of chunks created
 - `:chunk_positions` - Start/end positions of each chunk
 - `:chunks` - Vector of chunk text content
@@ -163,8 +163,8 @@ When using `:head` or `:tail`, only the specified number of tokens are returned 
 ### Content Preview
 ```clojure
 ;; Get first few tokens as preview
-(segment/call article-text 
-  {:head 50 
+(segment/call article-text
+  {:head 50
    :return_tokens true})
 ```
 
